@@ -35,22 +35,22 @@ def flip_image(ver_or_hor):
         current_left_point = 0
         for current_right_point in range(width - 1, floor(width / 2), -1):
             # print(f"{current_left_point} - {current_right_point}")
-            for line in image:
-                tmp = line[current_left_point]
-                line[current_left_point] = line[current_right_point]
-                line[current_right_point] = tmp
+            for row in image:
+                tmp = row[current_left_point]
+                row[current_left_point] = row[current_right_point]
+                row[current_right_point] = tmp
             current_left_point += 1
 
     # flip horizontally
     if ver_or_hor == 'hor':
-        curr_bottom_line = height - 1
-        for curr_high_line in range(0, floor(height / 2)):
-            # print(f"{curr_high_line} - {curr_bottom_line}")
+        curr_bottom_row = height - 1
+        for curr_high_row in range(0, floor(height / 2)):
+            # print(f"{curr_high_row} - {curr_bottom_row}")
             for point in range(0, width):
-                tmp = image[curr_bottom_line][point]
-                image[curr_bottom_line][point] = image[curr_high_line][point]
-                image[curr_high_line][point] = tmp
-            curr_bottom_line -= 1
+                tmp = image[curr_bottom_row][point]
+                image[curr_bottom_row][point] = image[curr_high_row][point]
+                image[curr_high_row][point] = tmp
+            curr_bottom_row -= 1
 
     plt.imshow(image)
     skm.show()
@@ -60,13 +60,14 @@ def compute_histogram(img_file):
     image = skm.imread(fname=img_file)
     histogram = numpy.zeros(256)
 
-    def compute(img):
-        for line in range(0, len(image)):
+    def compute():
+        for row in range(0, len(image)):
             for point in range(0, len(image[0])):
-                img[line][point] = 0.3 * img[line][point][0] + 0.59 * img[line][point][1] + 0.11 * img[line][point][2]
-                histogram[img[line][point][0]] += 1
+                image[row][point] = 0.3 * image[row][point][0] + 0.59 * image[row][point][1] \
+                                     + 0.11 * image[row][point][2]
+                histogram[image[row][point][0]] += 1
 
-    compute(image)
+    compute()
     plt.plot(histogram)
     plt.show()
     return histogram
@@ -83,3 +84,4 @@ if __name__ == '__main__':
     compute_histogram('images/bild03.jpg')
     compute_histogram('images/bild04.jpg')
     compute_histogram('images/bild05.jpg')
+    exit(0)
