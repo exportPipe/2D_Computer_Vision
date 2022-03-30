@@ -5,10 +5,11 @@ import matplotlib.pyplot as plt
 
 def show_image():
     image = skm.imread(fname='images/bild01.jpg')
-    print(image)
     plt.imshow(image)
     skm.show()
-    print("END")
+    for pixel_line in image:
+        for pixel in pixel_line:
+            print(pixel)
 
 
 if __name__ == '__main__':
