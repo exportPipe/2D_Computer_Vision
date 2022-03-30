@@ -58,6 +58,7 @@ def mirror_image(ver_or_hor):
 
 if __name__ == '__main__':
     reduce_rgb('r')
-    # reduce_rgb('g')
-    # reduce_rgb('b')
+    reduce_rgb('g')
+    reduce_rgb('b')
+    mirror_image('ver')
     mirror_image('hor')
