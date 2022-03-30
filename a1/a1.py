@@ -32,14 +32,14 @@ def flip_image(ver_or_hor):
 
     # flip vertically
     if ver_or_hor == 'ver':
-        current_left_column = 0
-        for current_right_column in range(width - 1, floor(width/2), -1):
-            print(f"{current_left_column} - {current_right_column}")
+        current_left_pixel = 0
+        for current_right_pixel in range(width - 1, floor(width/2), -1):
+            print(f"{current_left_pixel} - {current_right_pixel}")
             for line in image:
-                tmp = line[current_left_column]
-                line[current_left_column] = line[current_right_column]
-                line[current_right_column] = tmp
-            current_left_column += 1
+                tmp = line[current_left_pixel]
+                line[current_left_pixel] = line[current_right_pixel]
+                line[current_right_pixel] = tmp
+            current_left_pixel += 1
 
     # flip horizontally
     if ver_or_hor == 'hor':
