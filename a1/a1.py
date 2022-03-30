@@ -25,32 +25,34 @@ def reduce_rgb(rgb):
     skm.show()
 
 
-def mirror_image(ver_or_hor):
+def flip_image(ver_or_hor):
     image = skm.imread(fname='images/bild01.jpg')
     height = len(image)
     width = len(image[0])
 
+    # flip vertically
     if ver_or_hor == 'ver':
-        column_r = 0
-        for column_l in range(width - 1, floor(width/2), -1):
-            print(f"{column_l} - {column_r}")
+        curr_right_column = 0
+        for curr_left_column in range(width - 1, floor(width/2), -1):
+            print(f"{curr_left_column} - {curr_right_column}")
             for line in image:
-                tmp = line[column_r]
-                line[column_r] = line[column_l]
-                line[column_l] = tmp
-            column_r += 1
+                tmp = line[curr_right_column]
+                line[curr_right_column] = line[curr_left_column]
+                line[curr_left_column] = tmp
+            curr_right_column += 1
 
+    # flip horizontally
     if ver_or_hor == 'hor':
-        low_line = height - 1
-        for high_line in range(0, height):
-            if low_line <= floor(height / 2):
+        curr_bottom_line = height - 1
+        for curr_high_line in range(0, height):
+            if curr_bottom_line <= floor(height / 2):
                 break
-            print(f"{high_line} - {low_line}")
+            print(f"{curr_high_line} - {curr_bottom_line}")
             for pixel in range(0, width - 1):
-                tmp = image[low_line][pixel]
-                image[low_line][pixel] = image[high_line][pixel]
-                image[high_line][pixel] = tmp
-            low_line -= 1
+                tmp = image[curr_bottom_line][pixel]
+                image[curr_bottom_line][pixel] = image[curr_high_line][pixel]
+                image[curr_high_line][pixel] = tmp
+            curr_bottom_line -= 1
 
     plt.imshow(image)
     skm.show()
@@ -60,5 +62,5 @@ if __name__ == '__main__':
     reduce_rgb('r')
     reduce_rgb('g')
     reduce_rgb('b')
-    mirror_image('ver')
-    mirror_image('hor')
+    flip_image('ver')
+    flip_image('hor')
