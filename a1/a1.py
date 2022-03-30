@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 
 def reduce_rgb(rgb):
     image = skm.imread(fname='images/bild01.jpg')
-
     for pixel_line in image:
         for pixel in pixel_line:
             if rgb == 'r':
@@ -24,7 +23,14 @@ def reduce_rgb(rgb):
     skm.show()
 
 
+def mirror_image(ver_or_hor):
+    image = skm.imread(fname='images/bild01.jpg')
+    height = len(image)
+    width = len(image[0])
+
+
 if __name__ == '__main__':
     reduce_rgb('r')
     reduce_rgb('g')
     reduce_rgb('b')
+    mirror_image('ver')
