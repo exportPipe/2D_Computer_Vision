@@ -58,7 +58,7 @@ def flip_image(ver_or_hor):
 
 def compute_histogram(img_file):
     image = skm.imread(fname=img_file)
-    histogram = numpy.zeros(256)
+    histogram = numpy.zeros(256, dtype=int)
 
     def compute():
         for row in range(0, len(image)):
