@@ -24,7 +24,7 @@ def reduce_rgb(rgb):
     skm.show()
 
 
-def flip_image(ver_or_hor):
+def flip_image(ver_or_hor: str):
     image = skm.imread(fname='images/bild01.jpg')
     height = len(image)
     width = len(image[0])
@@ -58,7 +58,7 @@ def flip_image(ver_or_hor):
     skm.show()
 
 
-def compute_histogram(img_file, show_gray, show_histogram):
+def compute_histogram(img_file: str, show_gray: bool, show_histogram: bool):
     image = skm.imread(fname=img_file)
     histogram = numpy.zeros(256, dtype=int)
 
