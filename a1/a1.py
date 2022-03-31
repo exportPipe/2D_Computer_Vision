@@ -44,7 +44,8 @@ def flip_image(ver_or_hor):
     # flip horizontally
     if ver_or_hor == 'hor':
         curr_bottom_row = height - 1
-        for curr_high_row in range(0, floor(height / 2)):
+        # for curr_high_row in range(0, floor(height / 2)):
+        for curr_high_row in range(0, height):
             # print(f"{curr_high_row} - {curr_bottom_row}")
             for point in range(0, width):
                 tmp = image[curr_bottom_row][point]
@@ -69,19 +70,20 @@ def compute_histogram(img_file):
 
     compute()
     plt.plot(histogram)
+    plt.title(img_file)
     plt.show()
     return histogram
 
 
 if __name__ == '__main__':
-    reduce_rgb('r')
-    reduce_rgb('g')
-    reduce_rgb('b')
+    # reduce_rgb('r')
+    # reduce_rgb('g')
+    # reduce_rgb('b')
     flip_image('ver')
     flip_image('hor')
-    compute_histogram('images/bild01.jpg')
-    compute_histogram('images/bild02.jpg')
-    compute_histogram('images/bild03.jpg')
-    compute_histogram('images/bild04.jpg')
-    compute_histogram('images/bild05.jpg')
+    # compute_histogram('images/bild01.jpg')
+    # compute_histogram('images/bild02.jpg')
+    # compute_histogram('images/bild03.jpg')
+    # compute_histogram('images/bild04.jpg')
+    # compute_histogram('images/bild05.jpg')
     exit(0)
