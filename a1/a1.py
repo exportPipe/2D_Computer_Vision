@@ -1,5 +1,4 @@
 from math import floor
-
 import numpy
 import skimage.io as skm
 import matplotlib.pyplot as plt
@@ -57,7 +56,7 @@ def flip_image(ver_or_hor):
     skm.show()
 
 
-def compute_histogram(img_file):
+def compute_histogram(img_file, show_gray, show_histogram):
     image = skm.imread(fname=img_file)
     histogram = numpy.zeros(256, dtype=int)
 
@@ -69,9 +68,13 @@ def compute_histogram(img_file):
                 histogram[image[row][point][0]] += 1
 
     compute()
-    plt.plot(histogram)
-    plt.title(img_file)
-    plt.show()
+    if show_histogram:
+        plt.plot(histogram)
+        plt.title(img_file)
+        plt.show()
+    if show_gray:
+        plt.imshow(image)
+        skm.show()
     return histogram
 
 
@@ -81,9 +84,9 @@ if __name__ == '__main__':
     # reduce_rgb('b')
     flip_image('ver')
     flip_image('hor')
-    # compute_histogram('images/bild01.jpg')
-    # compute_histogram('images/bild02.jpg')
-    # compute_histogram('images/bild03.jpg')
-    # compute_histogram('images/bild04.jpg')
-    # compute_histogram('images/bild05.jpg')
+    # compute_histogram('images/bild01.jpg', False, True)
+    # compute_histogram('images/bild02.jpg', False, True)
+    # compute_histogram('images/bild03.jpg', False, True)
+    # compute_histogram('images/bild04.jpg', False, True)
+    # compute_histogram('images/bild05.jpg', False, True)
     exit(0)
