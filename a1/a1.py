@@ -30,6 +30,7 @@ def flip_image(ver_or_hor):
     width = len(image[0])
 
     # flip vertically
+    # TODO: only half of the image is mirrored
     if ver_or_hor == 'ver':
         current_left_point = 0
         for current_right_point in range(width - 1, floor(width / 2), -1):
@@ -41,6 +42,7 @@ def flip_image(ver_or_hor):
             current_left_point += 1
 
     # flip horizontally
+    # TODO: only half of the image is mirrored
     if ver_or_hor == 'hor':
         curr_bottom_row = height - 1
         # for curr_high_row in range(0, floor(height / 2)):
