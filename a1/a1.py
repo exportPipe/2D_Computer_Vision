@@ -33,8 +33,7 @@ def flip_image(ver_or_hor: str):
     # TODO: only half of the image is mirrored
     if ver_or_hor == 'ver':
         current_left_point = 0
-        for current_right_point in range(width - 1, 0, -1):
-            # print(f"{current_left_point} - {current_right_point}")
+        for current_right_point in range(width - 1, floor(width/2), -1):
             for row in image:
                 row[current_left_point], row[current_right_point] = row[current_right_point], row[current_left_point]
             current_left_point += 1
@@ -43,9 +42,7 @@ def flip_image(ver_or_hor: str):
     # TODO: only half of the image is mirrored
     if ver_or_hor == 'hor':
         curr_bottom_row = height - 1
-        # for curr_high_row in range(0, floor(height / 2)):
-        for curr_high_row in range(0, height):
-            # print(f"{curr_high_row} - {curr_bottom_row}")
+        for curr_high_row in range(0, floor(height/2)):
             for point in range(0, width):
                 image[curr_bottom_row][point], image[curr_high_row][point] \
                     = image[curr_high_row][point], image[curr_bottom_row][point]
