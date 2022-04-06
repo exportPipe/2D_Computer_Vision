@@ -82,6 +82,7 @@ def point_operation(lut):
     plt.imshow(image)
     skm.show()
 
+
 def compute_lut(a):
     lut = {}
     for i in range(256):
@@ -97,6 +98,7 @@ def compute_lut(a):
 
         lut[i] = value
     return lut
+
 
 if __name__ == '__main__':
     # reduce_rgb('r')
