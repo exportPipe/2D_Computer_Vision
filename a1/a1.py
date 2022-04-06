@@ -85,6 +85,7 @@ def point_operation(lut):
 
 def compute_lut(a):
     lut = {}
+    value = -1
     for i in range(256):
         if i <= 128:
             value = i + a
@@ -117,4 +118,4 @@ if __name__ == '__main__':
     point_operation(lut0)
     point_operation(lut10)
     point_operation(lut20)
-    # exit(0)
+    exit(0)
