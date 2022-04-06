@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 
 def reduce_rgb(rgb):
-    image = skm.imread(fname='images/monkey.jpg')
+    image = skm.imread(fname='/content/monkey.jpg')
     for point_line in image:
         for point in point_line:
             if rgb == 'r':
@@ -25,7 +25,7 @@ def reduce_rgb(rgb):
 
 
 def flip_image(ver_or_hor: str):
-    image = skm.imread(fname='images/bild01.jpg')
+    image = skm.imread(fname='/content/bild01.jpg')
     height = len(image)
     width = len(image[0])
 
@@ -63,7 +63,7 @@ def compute_histogram(img_file: str, show_gray: bool, show_histogram: bool):
     if show_histogram:
         plt.plot(histogram)
         plt.title(f"Histogram of {img_file}")
-        if img_file == 'images/bild04.jpg' or img_file == 'images/bild05.jpg':
+        if img_file == '/content/bild04.jpg' or img_file == '/content/bild05.jpg':
             plt.yticks(range(0, 3000, 500))
         plt.show()
     if show_gray:
@@ -72,8 +72,8 @@ def compute_histogram(img_file: str, show_gray: bool, show_histogram: bool):
     return histogram
 
 
-def point_operation(lut):
-    image = skm.imread(fname='images/bild01.jpg')
+def point_operation(lut: dict):
+    image = skm.imread(fname='/content/bild01.jpg')
     for row in image:
         for point in row:
             point[0] = lut[point[0]]
@@ -81,6 +81,7 @@ def point_operation(lut):
             point[2] = lut[point[2]]
     plt.imshow(image)
     skm.show()
+
 
 def compute_lut(a):
     lut = {}
@@ -93,17 +94,18 @@ def compute_lut(a):
         lut[i] = value
     return lut
 
+
 if __name__ == '__main__':
     # reduce_rgb('r')
     # reduce_rgb('g')
     # reduce_rgb('b')
     # flip_image('ver')
     # flip_image('hor')
-    compute_histogram('images/bild01.jpg', False, True)
-    compute_histogram('images/bild02.jpg', False, True)
-    # compute_histogram('images/bild03.jpg', False, True)
-    # compute_histogram('images/bild04.jpg', False, True)
-    # compute_histogram('images/bild05.jpg', False, True)
+    compute_histogram('/content/bild01.jpg', False, True)
+    compute_histogram('/content/bild02.jpg', False, True)
+    # compute_histogram('/content/bild03.jpg', False, True)
+    # compute_histogram('/content/bild04.jpg', False, True)
+    # compute_histogram('/content/bild05.jpg', False, True)
     lut0 = compute_lut(0)
     lut10 = compute_lut(10)
     lut20 = compute_lut(20)
