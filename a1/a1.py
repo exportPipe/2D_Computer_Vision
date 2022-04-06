@@ -73,7 +73,7 @@ def compute_histogram(img_file: str, show_gray: bool, show_histogram: bool):
 
 
 def point_operation(lut: dict):
-    image = skm.imread(fname='/content/bild01.jpg')
+    image = skm.imread(fname='images/bild01.jpg')
     for row in image:
         for point in row:
             point[0] = lut[point[0]]
@@ -101,8 +101,8 @@ if __name__ == '__main__':
     # reduce_rgb('b')
     # flip_image('ver')
     # flip_image('hor')
-    compute_histogram('/content/bild01.jpg', False, True)
-    compute_histogram('/content/bild02.jpg', False, True)
+    compute_histogram('images/bild01.jpg', False, True)
+    compute_histogram('images/bild02.jpg', False, True)
     # compute_histogram('/content/bild03.jpg', False, True)
     # compute_histogram('/content/bild04.jpg', False, True)
     # compute_histogram('/content/bild05.jpg', False, True)
