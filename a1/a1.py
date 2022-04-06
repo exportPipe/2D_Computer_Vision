@@ -72,7 +72,7 @@ def compute_histogram(img_file: str, show_gray: bool, show_histogram: bool):
     return histogram
 
 
-def point_operation(lut):
+def point_operation(lut: dict):
     image = skm.imread(fname='/content/bild01.jpg')
     for row in image:
         for point in row:
@@ -82,16 +82,18 @@ def point_operation(lut):
     plt.imshow(image)
     skm.show()
 
+
 def compute_lut(a):
-  lut = {}
-  for i in range(256):
-    value = i + a
-    if value > 255:
-      value = 255
-    if value < 0:
-      value = 0
-    lut[i] = value
-  return lut
+    lut = {}
+    for i in range(256):
+        value = i + a
+        if value > 255:
+            value = 255
+        if value < 0:
+            value = 0
+        lut[i] = value
+    return lut
+
 
 if __name__ == '__main__':
     # reduce_rgb('r')
