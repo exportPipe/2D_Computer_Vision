@@ -82,6 +82,7 @@ def point_operation(lut):
     plt.imshow(image)
     skm.show()
 
+
 def compute_lut(a):
     lut = {}
     for i in range(256):
@@ -98,21 +99,22 @@ def compute_lut(a):
         lut[i] = value
     return lut
 
+
 if __name__ == '__main__':
-    # reduce_rgb('r')
-    # reduce_rgb('g')
-    # reduce_rgb('b')
-    # flip_image('ver')
-    # flip_image('hor')
+    reduce_rgb('r')
+    reduce_rgb('g')
+    reduce_rgb('b')
+    flip_image('ver')
+    flip_image('hor')
     compute_histogram('images/bild01.jpg', False, True)
     compute_histogram('images/bild02.jpg', False, True)
-    # compute_histogram('images/bild03.jpg', False, True)
-    # compute_histogram('images/bild04.jpg', False, True)
-    # compute_histogram('images/bild05.jpg', False, True)
+    compute_histogram('images/bild03.jpg', False, True)
+    compute_histogram('images/bild04.jpg', False, True)
+    compute_histogram('images/bild05.jpg', False, True)
     lut0 = compute_lut(0)
     lut10 = compute_lut(10)
     lut20 = compute_lut(20)
     point_operation(lut0)
     point_operation(lut10)
     point_operation(lut20)
-    # exit(0)
+    exit(0)
