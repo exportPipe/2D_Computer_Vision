@@ -85,11 +85,16 @@ def point_operation(lut):
 def compute_lut(a):
     lut = {}
     for i in range(256):
-        value = i + a
-        if value > 255:
-            value = 255
+        if i <= 128:
+            value = i + a / 4
         if value < 0:
             value = 0
+
+        if i > 128:
+            value = i + a
+        if value > 255:
+            value = 255
+
         lut[i] = value
     return lut
 
