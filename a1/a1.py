@@ -86,12 +86,12 @@ def compute_lut(a):
     lut = {}
     for i in range(256):
         if i <= 128:
-            value = i + a / 4
+            value = i + a
         if value < 0:
             value = 0
 
         if i > 128:
-            value = i + a
+            value = i + a / 4
         if value > 255:
             value = 255
 
@@ -104,8 +104,8 @@ if __name__ == '__main__':
     # reduce_rgb('b')
     # flip_image('ver')
     # flip_image('hor')
-    compute_histogram('images/bild01.jpg', False, True)
-    compute_histogram('images/bild02.jpg', False, True)
+    # compute_histogram('images/bild01.jpg', False, True)
+    # compute_histogram('images/bild02.jpg', False, True)
     # compute_histogram('images/bild03.jpg', False, True)
     # compute_histogram('images/bild04.jpg', False, True)
     # compute_histogram('images/bild05.jpg', False, True)
