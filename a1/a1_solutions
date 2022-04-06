@@ -1,3 +1,6 @@
+Aufgabe 1
+numpy.ndarray ist in unserem Fall ein 2D Array welches das Bild als RGB Tupel abbildet
+
 Aufgabe 4
 a)
 Das Bild ist im Vordergrund unterbelichtet und im Hintergrund (Himmel) überbelichtet
@@ -11,5 +14,7 @@ c)
 Der Kontrast wurde erhöht. Im Originalbild sind viele Bildstellen im mittleren Bereich. Im bearbeiteten
 Bild wurde dieser Peak reduziert, indem die Werte gespreizt wurden.
 
+Aufgabe 5
+dunkle Stellen weniger aufhellen
 
 
