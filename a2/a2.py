@@ -27,17 +27,19 @@ def match_histo(img_histo, ref_histo):
         p[0] = c / n
         for i in range(1, k):
             c += histo[i]
-            p[i] = c / n
+            p[i] = round(c / n, 5)
         return p
 
     pa = cdf(img_histo)
     pr = cdf(ref_histo)
+    print(pr)
+    print(pa)
 
     f = numpy.zeros(k, dtype=int)
 
     for a in range(0, k):
         j = k - 1
-        while j >= 0 and pa[a] <= pr[a]:
+        while j >= 0 and pa[a] <= pr[j]:
             f[a] = j
             j -= 1
 
@@ -45,13 +47,16 @@ def match_histo(img_histo, ref_histo):
 
 
 if __name__ == '__main__':
-    reference_histo = compute_cum_histo('images/bild02.jpg')
-    cum_histo01 = compute_cum_histo('images/bild01.jpg')
-    print(f"{cum_histo01} {reference_histo}")
+    reference_histo = a1.compute_histogram('images/bild02.jpg', False, False)
+    original_histo = a1.compute_histogram('images/bild01.jpg', False, False)
 
-    match_histo01 = match_histo(cum_histo01, reference_histo)
+    match_histo01 = match_histo(original_histo, reference_histo)
+
+    image = skm.imread('images/bild01.jpg')
 
     plt.plot(reference_histo)
+    plt.show()
+    plt.plot(original_histo)
     plt.show()
 
     exit(0)
