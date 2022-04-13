@@ -5,8 +5,8 @@ import matplotlib.pyplot as plt
 from a1 import a1
 
 
-def compute_cum_histo(image, asImage):
-    if not asImage:
+def compute_cum_histo(image, as_image):
+    if not as_image:
         histo = a1.compute_histogram(image, False, False)
     else:
         histo = numpy.zeros(256, dtype=int)
@@ -53,7 +53,7 @@ def match_histo(img_histo, ref_histo):
     return f
 
 
-def point_operation(lut: dict):
+def point_operation(lut):
     image = skm.imread(fname='images/bild01.jpg')
     plt.imshow(image)
     plt.show()
@@ -75,7 +75,6 @@ def point_operation(lut: dict):
 if __name__ == '__main__':
     reference_histo = compute_cum_histo('images/bild02.jpg', False)
     cum_histo01 = compute_cum_histo('images/bild01.jpg', False)
-    print(f"{cum_histo01} {reference_histo}")
 
     match_histo01 = match_histo(cum_histo01, reference_histo)
     point_operation(match_histo01)
