@@ -5,9 +5,10 @@ import matplotlib.pyplot as plt
 from a1 import a1
 
 
-def compute_cum_histo(image, as_image):
+def compute_cum_histo(image, as_image, return_gray: bool):
     if not as_image:
         histo = a1.compute_histogram(image, False, False)
+        image = skm.imread(image)
     else:
         histo = numpy.zeros(256, dtype=int)
         for row in range(0, len(image)):
@@ -16,11 +17,16 @@ def compute_cum_histo(image, as_image):
                                     + 0.11 * image[row][point][2]
                 histo[image[row][point][0]] += 1
 
-    cum_histo = numpy.zeros(256, dtype=int)
+    if return_gray:
+        return image
+    cum_histo = numpy.zeros(256, dtype=float)
+
+    size = len(image) * len(image[0])
 
     for i in range(0, len(histo)):
         for j in range(0, i + 1):
             cum_histo[i] += histo[j]
+        cum_histo[i] = cum_histo[i] / size
     return cum_histo
 
 
@@ -39,10 +45,12 @@ def match_histo(img_histo, ref_histo):
             p[i] = c / n
         return p
 
-    pa = cdf(img_histo)
-    pr = cdf(ref_histo)
+    # pa = cdf(img_histo)
+    # pr = cdf(ref_histo)
+    pa = img_histo
+    pr = ref_histo
 
-    f = numpy.zeros(k, dtype=int)
+    f = numpy.zeros(k, dtype=float)
 
     for a in range(0, k):
         j = k - 1
@@ -54,7 +62,7 @@ def match_histo(img_histo, ref_histo):
 
 
 def point_operation(lut):
-    image = skm.imread(fname='images/bild01.jpg')
+    image = skm.imread('images/bild01.jpg')
     plt.imshow(image)
     plt.show()
 
@@ -67,20 +75,27 @@ def point_operation(lut):
     plt.imshow(image)
     plt.show()
 
-    cum_histo_after = compute_cum_histo(image, True)
-    plt.plot(cum_histo_after)
+    cum_histo_after = compute_cum_histo(image, True, False)
+    plt.bar(numpy.arange(256), cum_histo_after)
     plt.show()
 
 
 if __name__ == '__main__':
-    reference_histo = compute_cum_histo('images/bild02.jpg', False)
-    cum_histo01 = compute_cum_histo('images/bild01.jpg', False)
+    reference_histo = compute_cum_histo('images/bild02.jpg', False, False)
+
+    cum_histo01 = compute_cum_histo('images/bild01.jpg', False, False)
 
     match_histo01 = match_histo(cum_histo01, reference_histo)
     point_operation(match_histo01)
 
-    plt.plot(reference_histo)
-    plt.show()
+    # plt.bar(numpy.arange(256), cum_histo01)
+    # plt.show()
+    #
+    # plt.bar(numpy.arange(256), reference_histo)
+    # plt.show()
+    #
+    # plt.bar(numpy.arange(256), match_histo01)
+    # plt.show()
 
     reference_image = skm.imread(fname='images/bild02.jpg')
     plt.imshow(reference_image)
