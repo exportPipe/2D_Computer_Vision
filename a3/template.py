@@ -7,17 +7,29 @@ import matplotlib.cm as cm
 
 
 def filter1(image, filter_mask, off):
-    s = 1 / sum(filter_mask)
+    s = 1 / (len(filter_mask) ** 2)
 
-    k = floor(len(filter_mask[0]) / 2)
-    l = floor(len(filter_mask) / 2)
+    k = floor(len(filter_mask) / 2)
 
     copy = np.copy(image)
-    for u in range(1, len(image) - 1):
-        for v in range(1, len(image[0]) - 1):
-            pass
 
-    return image
+    for v in range(k, len(image) - k - 1):
+        for u in range(k, len(image[0]) - k - 1):
+            total = 0
+            for j in range(-k, k):
+                for i in range(-k, k):
+                    p = image[u+i][v+j]
+                    c = filter_mask[j+k][i+k]
+                    total = total + c * p
+            print(total)
+            q = floor(s * total)
+            if q < 0:
+                q = 0
+            if q > 255:
+                q = 255
+            copy[u][v] = q
+
+    return copy
 
 
 def filter2(image, filter_mask, off, edge):
@@ -53,7 +65,8 @@ if __name__ == "__main__":
         [1 / 9, 1 / 9, 1 / 9],
     ])
 
-    imgOut = filter2(img, fm, 0, 'min')
+    imgOut = filter1(img, fm, 0)
+    # imgOut = filter2(img, fm, 0, 'min')
 
     # plot img
     plt.figure(1)
