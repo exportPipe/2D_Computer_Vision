@@ -1,3 +1,5 @@
+from math import floor
+
 from skimage import io
 import numpy as np
 import matplotlib.pyplot as plt
@@ -5,6 +7,16 @@ import matplotlib.cm as cm
 
 
 def filter1(image, filter_mask, off):
+    s = 1 / sum(filter_mask)
+
+    k = floor(len(filter_mask[0]) / 2)
+    l = floor(len(filter_mask) / 2)
+
+    copy = np.copy(image)
+    for u in range(1, len(image) - 1):
+        for v in range(1, len(image[0]) - 1):
+            pass
+
     return image
 
 
@@ -33,6 +45,12 @@ if __name__ == "__main__":
         [-1, -1, -1],
         [-1, 8, -1],
         [-1, -1, -1]
+    ])
+
+    fm_smooth = np.array([
+        [1 / 9, 1 / 9, 1 / 9],
+        [1 / 9, 1 / 9, 1 / 9],
+        [1 / 9, 1 / 9, 1 / 9],
     ])
 
     imgOut = filter2(img, fm, 0, 'min')
