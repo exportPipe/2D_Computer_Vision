@@ -4,11 +4,11 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 
 
-def filter1(image, filter, off):
+def filter1(image, filter_mask, off):
     return image
 
 
-def filter2(image, filter, off, edge):
+def filter2(image, filter_mask, off, edge):
     return image
 
 

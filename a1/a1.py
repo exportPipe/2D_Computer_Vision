@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 
 def reduce_rgb(rgb):
-    image = skm.imread(fname='C:/Users/paulr/PycharmProjects/2D_Computer_Vision/a1/images/bild01.jpg')
+    image = skm.imread('images/bild01.jpg')
     for point_line in image:
         for point in point_line:
             if rgb == 'r':
@@ -25,7 +25,7 @@ def reduce_rgb(rgb):
 
 
 def flip_image(ver_or_hor: str):
-    image = skm.imread(fname='C:/Users/paulr/PycharmProjects/2D_Computer_Vision/a1/images/bild01.jpg')
+    image = skm.imread('images/bild01.jpg')
     height = len(image)
     width = len(image[0])
 
@@ -73,7 +73,7 @@ def compute_histogram(img_file: str, show_gray: bool, show_histogram: bool):
 
 
 def point_operation(lut: dict):
-    image = skm.imread(fname='images/bild01.jpg')
+    image = skm.imread('images/bild01.jpg')
     for row in image:
         for point in row:
             point[0] = lut[point[0]]
@@ -101,7 +101,7 @@ if __name__ == '__main__':
     reduce_rgb('b')
     flip_image('ver')
     flip_image('hor')
-    compute_histogram('C:/Users/paulr/PycharmProjects/2D_Computer_Vision/a1/images/bild01.jpg', False, True)
+    compute_histogram('images/bild01.jpg', False, True)
     # compute_histogram('images/bild02.jpg', False, True)
     # compute_histogram('images/bild03.jpg', False, True)
     # compute_histogram('images/bild04.jpg', False, True)
