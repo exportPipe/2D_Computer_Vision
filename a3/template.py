@@ -7,29 +7,32 @@ import matplotlib.cm as cm
 
 
 def filter1(image, filter_mask, off):
-    s = 1 / (len(filter_mask) ** 2)
+    s = sum(sum(filter_mask))
+    if s == 0:
+        s = 1
+    else:
+        s = 1 / s
 
     k = floor(len(filter_mask) / 2)
 
-    copy = np.copy(image)
+    out_image = np.copy(image)
 
-    for v in range(k, len(image) - k - 1):
-        for u in range(k, len(image[0]) - k - 1):
-            total = 0
-            for j in range(-k, k):
-                for i in range(-k, k):
-                    p = image[u+i][v+j]
-                    c = filter_mask[j+k][i+k]
-                    total = total + c * p
-            print(total)
-            q = floor(s * total)
+    for v in range(k, len(image) - k):
+        for u in range(k, len(image[0]) - k):
+            total = off
+            for j in range(-k, k + 1):
+                for i in range(-k, k + 1):
+                    p = image[u + i][v + j]
+                    c = filter_mask[j + k][i + k]
+                    total = total + (c * p)
+            q = int(round(s * total))
             if q < 0:
                 q = 0
             if q > 255:
                 q = 255
-            copy[u][v] = q
+            out_image[u][v] = q
 
-    return copy
+    return out_image
 
 
 def filter2(image, filter_mask, off, edge):
@@ -54,18 +57,19 @@ if __name__ == "__main__":
     img = rgb2gray(img)
 
     fm = np.array([
-        [-1, -1, -1],
-        [-1, 8, -1],
-        [-1, -1, -1]
+        [3, 5, 3],
+        [5, 8, 5],
+        [3, 5, 3]
     ])
 
+    ö = (1 / 9)
     fm_smooth = np.array([
-        [1 / 9, 1 / 9, 1 / 9],
-        [1 / 9, 1 / 9, 1 / 9],
-        [1 / 9, 1 / 9, 1 / 9],
+        [ö, ö, ö],
+        [ö, ö, ö],
+        [ö, ö, ö]
     ])
 
-    imgOut = filter1(img, fm, 0)
+    imgOut = filter1(img, fm, 2)
     # imgOut = filter2(img, fm, 0, 'min')
 
     # plot img
@@ -78,3 +82,4 @@ if __name__ == "__main__":
     plt.imshow(imgOut, cmap=cm.Greys_r)
 
     plt.show()
+    exit(0)
