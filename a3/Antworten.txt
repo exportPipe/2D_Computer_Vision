@@ -1,0 +1,20 @@
+Lineare Filter
+Bei einem linearen Filter sind die Eigenschaften der Filterung unabhängig vom Signalpegel. Das Signal wird nicht
+verzerrt. Wenn man das Eingangssignal für eine bestimmte Frequenz um einen Faktor a vergrößert, so ist auch das
+Ausgangssignal für diese Frequenz entsprechend vergrößert. Die Form des Signals wird dabei nicht grundlegend verändert.
+ Tiefpass, Hochpass, Bandpass, Bandsperre und Allpass werden als lineare Filter bezeichnet. Es gibt aber auch wesentlich
+  komplexere lineare Filter. Beispielsweise ist ein Echo-Effekt oder ein Kammfilter ebenfalls linear.
+
+Sie können als Vierpolersatzschaltbild dargestellt werden.
+
+Der Begriff linearer Filter wird in der Regel als Synonym für einen linear zeitinvarianten Filter verwendet.
+
+Nichtlineare Filter
+Bei einem nichtlinearen Filter sind die Eigenschaften der Filterung abhängig vom Signalpegel und vom zeitlichen Verlauf
+ des Signals. Das Signal wird in seiner Form verzerrt. Zu den nichtlinearen Filtern gehören zum Beispiel Begrenzer,
+ Verzerrer, Gleichrichter (Betrag) und Medianfilter.
+
+3.
+b) Heap Ssort hat gte Zeitkomplexizität (n log n)
+c) bild wird unscharf und kleiner
+
