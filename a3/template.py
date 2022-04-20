@@ -36,7 +36,36 @@ def filter1(image, filter_mask, off):
 
 
 def filter2(image, filter_mask, off, edge):
-    return image
+    s = sum(sum(filter_mask))
+    if s == 0:
+        s = 1
+    else:
+        s = 1 / s
+
+    k = floor(len(filter_mask) / 2)
+
+    out_image2 = np.copy(image)
+
+    for v in range(k, len(image) - k):
+        for u in range(k, len(image[0]) - k):
+            total = off
+            for j in range(-k, k + 1):
+                for i in range(-k, k + 1):
+                    p = image[u + i][v + j]
+                    c = filter_mask[j + k][i + k]
+                    total = total + (c * p)
+            q = int(round(s * total))
+            if q < 0 or q > 255:
+                if edge == "min":
+                    q = 0
+                elif edge == "max":
+                    q = 255
+                #elif edge is "continue":
+                 #   q
+            out_image2[u][v] = q
+
+    return out_image2
+
 
 
 def rgb2gray(rgb):
@@ -49,9 +78,13 @@ def rgb2gray(rgb):
 if __name__ == "__main__":
     # read img
     img = io.imread("images/lena.jpg")
+    img2 = io.imread("images/pepper.jpg")
+    img3 = io.imread("images/tree.png")
 
     # convert to numpy array
     img = np.array(img)
+    img2 = np.array(img2)
+    img3 = np.array(img3)
 
     # convert to grayscale
     img = rgb2gray(img)
@@ -70,7 +103,7 @@ if __name__ == "__main__":
     ])
 
     imgOut = filter1(img, fm, 2)
-    # imgOut = filter2(img, fm, 0, 'min')
+    imgOut2 = filter2(img2, fm, 0, 'max')
 
     # plot img
     plt.figure(1)
@@ -80,6 +113,17 @@ if __name__ == "__main__":
     plt.figure(1)
     plt.subplot(212)
     plt.imshow(imgOut, cmap=cm.Greys_r)
+
+    plt.show()
+
+    # plot img2
+    plt.figure(1)
+    plt.subplot(211)
+    plt.imshow(img2, cmap=cm.Greys_r)
+    # plot imgOut2
+    plt.figure(1)
+    plt.subplot(212)
+    plt.imshow(imgOut2, cmap=cm.Greys_r)
 
     plt.show()
     exit(0)
