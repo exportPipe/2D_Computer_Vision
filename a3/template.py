@@ -7,6 +7,51 @@ import matplotlib.cm as cm
 
 
 def filter1(image, filter_mask, off):
+    out_image = np.copy(image)
+
+    m, n = image.shape
+    if n > m:
+        m, n = n, m
+
+    out_image = np.resize(out_image, (round(m / off), round(n / off)))
+
+    s = sum(sum(filter_mask))
+    if s == 0:
+        s = 1
+    else:
+        s = 1 / s
+
+    k = floor(len(filter_mask) / 2)
+    m_o, n_o = out_image.shape
+    if n > m:
+        m, n = n, m
+    v_o, u_o = k, k
+
+    for v in range(k, n - k, off):
+        v_o += 1
+        if v_o >= n_o:
+            break
+        for u in range(k, m - k, off):
+            u_o += 1
+            if u_o >= m_o:
+                u_o = k
+            total = off
+            for j in range(-k, k + 1):
+                for i in range(-k, k + 1):
+                    p = image[u + i][v + j]
+                    c = filter_mask[j + k][i + k]
+                    total = total + c * p
+            q = int(round(s * total))
+            if q < 0:
+                q = 0
+            if q > 255:
+                q = 255
+            out_image[u_o][v_o] = q
+
+    return out_image
+
+
+def filter2(image, filter_mask, off, edge):
     m, n = image.shape
     if n > m:
         m, n = n, m
@@ -19,10 +64,8 @@ def filter1(image, filter_mask, off):
 
     k = floor(len(filter_mask) / 2)
 
-    out_image = np.copy(image)
+    out_image2 = np.copy(image)
 
-    print(range(k, m - k))
-    print(range(k, n - k))
     for v in range(k, n - k):
         for u in range(k, m - k):
             total = off
@@ -30,36 +73,7 @@ def filter1(image, filter_mask, off):
                 for i in range(-k, k + 1):
                     p = image[u + i][v + j]
                     c = filter_mask[j + k][i + k]
-                    total = total + (c * p)
-            q = int(round(s * total))
-            if q < 0:
-                q = 0
-            if q > 255:
-                q = 255
-            out_image[u][v] = q
-
-    return out_image
-
-
-def filter2(image, filter_mask, off, edge):
-    s = sum(sum(filter_mask))
-    if s == 0:
-        s = 1
-    else:
-        s = 1 / s
-
-    k = floor(len(filter_mask) / 2)
-
-    out_image2 = np.copy(image)
-
-    for v in range(k, len(image) - k):
-        for u in range(k, len(image[0]) - k):
-            total = off
-            for j in range(-k, k + 1):
-                for i in range(-k, k + 1):
-                    p = image[u + i][v + j]
-                    c = filter_mask[j + k][i + k]
-                    total = total + (c * p)
+                    total = total + c * p
             q = int(round(s * total))
             if q < 0 or q > 255:
                 if edge == "min":
@@ -83,7 +97,6 @@ def median_filter(in_image, filter_size, offset):
             for j in range(-floor(filter_size / 2), floor(filter_size / 2) + 1):
                 for i in range(-floor(filter_size / 2), floor(filter_size / 2) + 1):
                     p[k] = in_image[u + i][v + j]
-                    print(in_image[u + i][v + j])
                     k += 1
             p = np.sort(p, kind='heapsort')
             copy[u][v] = p[floor(len(p) / 2)]
@@ -124,14 +137,22 @@ if __name__ == "__main__":
         [ö, ö, ö]
     ])
 
-    imgOut = filter1(img, fm, 2)
+    # FILTER
+    imgOut = filter1(img3, fm, 2)
+    origImage = img3
+
+    # FILTER 2
     # imgOut = filter2(img2, fm, 0, 'max')
+    # origImage = img2
+
+    # MEDIAN
     # imgOut = median_filter(img2, 3, 1)
+    # origImage = img2
 
     # plot img
     plt.figure(1)
     plt.subplot(211)
-    plt.imshow(img, cmap=cm.Greys_r)
+    plt.imshow(origImage, cmap=cm.Greys_r)
     # plot imgOut
     plt.figure(1)
     plt.subplot(212)
