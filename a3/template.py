@@ -7,6 +7,10 @@ import matplotlib.cm as cm
 
 
 def filter1(image, filter_mask, off):
+    m, n = image.shape
+    if n > m:
+        m, n = n, m
+
     s = sum(sum(filter_mask))
     if s == 0:
         s = 1
@@ -17,8 +21,10 @@ def filter1(image, filter_mask, off):
 
     out_image = np.copy(image)
 
-    for v in range(k, len(image) - k):
-        for u in range(k, len(image[0]) - k):
+    print(range(k, m - k))
+    print(range(k, n - k))
+    for v in range(k, n - k):
+        for u in range(k, m - k):
             total = off
             for j in range(-k, k + 1):
                 for i in range(-k, k + 1):
@@ -61,7 +67,7 @@ def filter2(image, filter_mask, off, edge):
                 elif edge == "max":
                     q = 255
                 elif edge == "continue":
-                    q = image[u+1][v]
+                    q = image[u + 1][v]
             out_image2[u][v] = q
 
     return out_image2
@@ -74,13 +80,12 @@ def median_filter(in_image, filter_size, offset):
     for v in range(1, len(in_image) - filter_size):
         for u in range(1, len(in_image[0]) - filter_size):
             k = 0
-            for j in range(-floor(filter_size/2), floor(filter_size/2) + 1):
-                for i in range(-floor(filter_size/2), floor(filter_size/2) + 1):
-                    p[k] = in_image[u+i][v+j]
-                    print(in_image[u+i][v+j])
+            for j in range(-floor(filter_size / 2), floor(filter_size / 2) + 1):
+                for i in range(-floor(filter_size / 2), floor(filter_size / 2) + 1):
+                    p[k] = in_image[u + i][v + j]
+                    print(in_image[u + i][v + j])
                     k += 1
             p = np.sort(p, kind='heapsort')
-            print(p)
             copy[u][v] = p[floor(len(p) / 2)]
     return copy
 
@@ -120,8 +125,8 @@ if __name__ == "__main__":
     ])
 
     imgOut = filter1(img, fm, 2)
-    imgOut2 = filter2(img2, fm, 0, 'max')
-    imgOut_median = median_filter(img2, 3, 1)
+    # imgOut = filter2(img2, fm, 0, 'max')
+    # imgOut = median_filter(img2, 3, 1)
 
     # plot img
     plt.figure(1)
@@ -131,29 +136,6 @@ if __name__ == "__main__":
     plt.figure(1)
     plt.subplot(212)
     plt.imshow(imgOut, cmap=cm.Greys_r)
-
-    plt.show()
-
-    # plot img2
-    plt.figure(1)
-    plt.subplot(211)
-    plt.imshow(img2, cmap=cm.Greys_r)
-    # plot imgOut2
-    plt.figure(1)
-    plt.subplot(212)
-    plt.imshow(imgOut2, cmap=cm.Greys_r)
-
-    plt.show()
-
-    # plot median pepper
-    # plot img2
-    plt.figure(1)
-    plt.subplot(211)
-    plt.imshow(img2, cmap=cm.Greys_r)
-    # plot imgOut3
-    plt.figure(1)
-    plt.subplot(212)
-    plt.imshow(imgOut_median, cmap=cm.Greys_r)
 
     plt.show()
     exit(0)
