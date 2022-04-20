@@ -7,35 +7,34 @@ import matplotlib.cm as cm
 
 
 def filter1(image, filter_mask, off):
+    if off == 0:
+        off = 1
+
     out_image = np.copy(image)
 
+    # IMAGE SIZE / should change width height?
     m, n = image.shape
     if n > m:
         m, n = n, m
 
+    # OUTPUT IMAGE / reshape to offset size
     out_image = np.resize(out_image, (round(m / off), round(n / off)))
 
+    # SCALE s / one divided by sum of all coefficients
     s = sum(sum(filter_mask))
     if s == 0:
         s = 1
     else:
         s = 1 / s
 
+    # k is filter distance from current pixel
     k = floor(len(filter_mask) / 2)
-    m_o, n_o = out_image.shape
-    if n > m:
-        m, n = n, m
-    v_o, u_o = k, k
 
+    # moving mask by offset
     for v in range(k, n - k, off):
-        v_o += 1
-        if v_o >= n_o:
-            break
         for u in range(k, m - k, off):
-            u_o += 1
-            if u_o >= m_o:
-                u_o = k
-            total = off
+            # collecting new pixel value q in mask area
+            total = 0
             for j in range(-k, k + 1):
                 for i in range(-k, k + 1):
                     p = image[u + i][v + j]
@@ -46,12 +45,15 @@ def filter1(image, filter_mask, off):
                 q = 0
             if q > 255:
                 q = 255
-            out_image[u_o][v_o] = q
+            # setting q in img out
+            out_image[floor(u / off)][floor(v / off)] = q
 
     return out_image
 
 
 def filter2(image, filter_mask, off, edge):
+    if off == 0:
+        off = 1
     out_image = np.copy(image)
 
     m, n = image.shape
@@ -67,20 +69,10 @@ def filter2(image, filter_mask, off, edge):
         s = 1 / s
 
     k = floor(len(filter_mask) / 2)
-    m_o, n_o = out_image.shape
-    if n > m:
-        m, n = n, m
-    v_o, u_o = k, k
 
     for v in range(k, n - k, off):
-        v_o += 1
-        if v_o >= n_o:
-            break
         for u in range(k, m - k, off):
-            u_o += 1
-            if u_o >= m_o:
-                u_o = k
-            total = off
+            total = 0
             for j in range(-k, k + 1):
                 for i in range(-k, k + 1):
                     p = image[u + i][v + j]
@@ -94,24 +86,33 @@ def filter2(image, filter_mask, off, edge):
                     q = 255
                 elif edge == "continue":
                     q = image[u + 1][v]
-            out_image[u_o][v_o] = q
+            out_image[floor(u / off)][floor(v / off)] = q
 
     return out_image
 
 
 def median_filter(in_image, filter_size, offset):
+    if offset == 0:
+        offset = 1
     copy = np.copy(in_image)
+    m, n = copy.shape
+    if n > m:
+        m, n = n, m
+    copy = np.resize(copy, (round(m / offset), round(n / offset)))
+
     p = np.ndarray(filter_size ** 2, dtype=int)
 
-    for v in range(1, len(in_image) - filter_size):
-        for u in range(1, len(in_image[0]) - filter_size):
+    for v in range(1, m - filter_size - 1, offset):
+        for u in range(1, n - filter_size - 1, offset):
             k = 0
             for j in range(-floor(filter_size / 2), floor(filter_size / 2) + 1):
                 for i in range(-floor(filter_size / 2), floor(filter_size / 2) + 1):
                     p[k] = in_image[u + i][v + j]
                     k += 1
             p = np.sort(p, kind='heapsort')
-            copy[u][v] = p[floor(len(p) / 2)]
+
+            copy[floor(u / offset)][floor(v / offset)] = p[floor(len(p) / 2)]
+            print(copy[floor(u / offset)][floor(v / offset)])
     return copy
 
 
@@ -142,20 +143,28 @@ if __name__ == "__main__":
         [3, 5, 3]
     ])
 
-    ö = (1 / 9)
+    ö = 1
     fm_smooth = np.array([
         [ö, ö, ö],
         [ö, ö, ö],
         [ö, ö, ö]
     ])
 
+    fmbig = np.array([
+        [3, 3, 5, 3, 3],
+        [3, 3, 5, 3, 3],
+        [5, 5, 8, 5, 5],
+        [3, 3, 5, 3, 3],
+        [3, 3, 5, 3, 3]
+    ])
+
     # FILTER
-    # imgOut = filter1(img, fm, 3)
-    # origImage = img
+    imgOut = filter1(img, fmbig, 0)
+    origImage = img
 
     # FILTER 2
-    imgOut = filter2(img2, fm, 2, 'continue')
-    origImage = img2
+    # imgOut = filter2(img2, fm, 2, 'continue')
+    # origImage = img2
 
     # MEDIAN
     # imgOut = median_filter(img2, 3, 1)
