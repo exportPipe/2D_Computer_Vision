@@ -60,8 +60,8 @@ def filter2(image, filter_mask, off, edge):
                     q = 0
                 elif edge == "max":
                     q = 255
-                #elif edge is "continue":
-                 #   q
+                elif edge == "continue":
+                    q = image[u+1][v]
             out_image2[u][v] = q
 
     return out_image2
@@ -112,7 +112,7 @@ if __name__ == "__main__":
         [3, 5, 3]
     ])
 
-    ö = 1
+    ö = (1 / 9)
     fm_smooth = np.array([
         [ö, ö, ö],
         [ö, ö, ö],
