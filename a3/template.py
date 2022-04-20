@@ -52,9 +52,13 @@ def filter1(image, filter_mask, off):
 
 
 def filter2(image, filter_mask, off, edge):
+    out_image = np.copy(image)
+
     m, n = image.shape
     if n > m:
         m, n = n, m
+
+    out_image = np.resize(out_image, (round(m / off), round(n / off)))
 
     s = sum(sum(filter_mask))
     if s == 0:
@@ -63,11 +67,19 @@ def filter2(image, filter_mask, off, edge):
         s = 1 / s
 
     k = floor(len(filter_mask) / 2)
+    m_o, n_o = out_image.shape
+    if n > m:
+        m, n = n, m
+    v_o, u_o = k, k
 
-    out_image2 = np.copy(image)
-
-    for v in range(k, n - k):
-        for u in range(k, m - k):
+    for v in range(k, n - k, off):
+        v_o += 1
+        if v_o >= n_o:
+            break
+        for u in range(k, m - k, off):
+            u_o += 1
+            if u_o >= m_o:
+                u_o = k
             total = off
             for j in range(-k, k + 1):
                 for i in range(-k, k + 1):
@@ -82,9 +94,9 @@ def filter2(image, filter_mask, off, edge):
                     q = 255
                 elif edge == "continue":
                     q = image[u + 1][v]
-            out_image2[u][v] = q
+            out_image[u_o][v_o] = q
 
-    return out_image2
+    return out_image
 
 
 def median_filter(in_image, filter_size, offset):
@@ -138,12 +150,12 @@ if __name__ == "__main__":
     ])
 
     # FILTER
-    imgOut = filter1(img3, fm, 2)
-    origImage = img3
+    # imgOut = filter1(img, fm, 3)
+    # origImage = img
 
     # FILTER 2
-    # imgOut = filter2(img2, fm, 0, 'max')
-    # origImage = img2
+    imgOut = filter2(img2, fm, 2, 'continue')
+    origImage = img2
 
     # MEDIAN
     # imgOut = median_filter(img2, 3, 1)
