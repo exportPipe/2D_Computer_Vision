@@ -159,7 +159,7 @@ if __name__ == "__main__":
     ])
 
     # FILTER
-    imgOut = filter1(img, fmbig, 0)
+    imgOut = filter1(img, fmbig, 2)
     origImage = img
 
     # FILTER 2
