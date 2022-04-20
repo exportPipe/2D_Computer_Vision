@@ -54,6 +54,7 @@ def filter1(image, filter_mask, off):
 def filter2(image, filter_mask, off, edge):
     if off == 0:
         off = 1
+
     out_image = np.copy(image)
 
     m, n = image.shape
@@ -79,7 +80,7 @@ def filter2(image, filter_mask, off, edge):
                     c = filter_mask[j + k][i + k]
                     total = total + c * p
             q = int(round(s * total))
-            if q < 0 or q > 255:
+            if q <= 0 or q >= 255:
                 if edge == "min":
                     q = 0
                 elif edge == "max":
@@ -159,23 +160,23 @@ if __name__ == "__main__":
     ])
 
     # FILTER
-    imgOut = filter1(img, fmbig, 2)
-    origImage = img
+    # imgOut = filter1(img, fmbig, 2)
+    # origImage = img
 
     # FILTER 2
-    # imgOut = filter2(img2, fm, 2, 'continue')
-    # origImage = img2
+    imgOut = filter2(img3, fm, 0, 'min')
+    origImage = img3
 
     # MEDIAN
     # imgOut = median_filter(img2, 3, 1)
     # origImage = img2
 
     # plot img
-    plt.figure(1)
+    plt.figure(1, dpi=300)
     plt.subplot(211)
     plt.imshow(origImage, cmap=cm.Greys_r)
     # plot imgOut
-    plt.figure(1)
+    plt.figure(1, dpi=300)
     plt.subplot(212)
     plt.imshow(imgOut, cmap=cm.Greys_r)
 
