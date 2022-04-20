@@ -60,8 +60,8 @@ def filter2(image, filter_mask, off, edge):
                     q = 0
                 elif edge == "max":
                     q = 255
-                #elif edge is "continue":
-                 #   q
+                elif edge == "continue":
+                    q = image[u+1][v]
             out_image2[u][v] = q
 
     return out_image2
@@ -103,7 +103,7 @@ if __name__ == "__main__":
     ])
 
     imgOut = filter1(img, fm, 2)
-    imgOut2 = filter2(img2, fm, 0, 'max')
+    imgOut2 = filter2(img2, fm, 0, 'continue')
 
     # plot img
     plt.figure(1)
@@ -125,5 +125,5 @@ if __name__ == "__main__":
     plt.subplot(212)
     plt.imshow(imgOut2, cmap=cm.Greys_r)
 
-    plt.show()
+    #plt.show()
     exit(0)
