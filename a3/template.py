@@ -88,7 +88,6 @@ def filter2(image, filter_mask, off, edge):
                 elif edge == "continue":
                     q = image[u + 1][v]
             out_image[floor(u / off)][floor(v / off)] = q
-
     return out_image
 
 
@@ -113,8 +112,34 @@ def median_filter(in_image, filter_size, offset):
             p = np.sort(p, kind='heapsort')
 
             copy[floor(u / offset)][floor(v / offset)] = p[floor(len(p) / 2)]
-            print(copy[floor(u / offset)][floor(v / offset)])
     return copy
+
+
+def padding(image, offset, edge):
+    height, width = image.shape
+    out_image = np.zeros((height + offset * 2, width + offset * 2))
+    if edge == 'min':
+        out_image[offset: -offset, offset: -offset] = image
+    if edge == 'max':
+        out_image = (out_image + 1) * 255
+        out_image[offset: -offset, offset: -offset] = image
+
+    if edge == 'continue':
+        tmp = image[0]
+        for top in range(0, offset):
+            out_image[top, offset: offset + width] = tmp
+        tmp = image[top]
+        for bot in range(height + offset, height + 2 * offset):
+             out_image[bot, offset: offset + height] = tmp
+        out_image[offset: -offset, offset: -offset] = image
+        tmp = out_image[:, offset]
+        for left in range(0, offset):
+            out_image[:, left] = tmp
+        tmp = out_image[:, width - offset]
+        for right in range(width + offset, width + 2 * offset):
+            out_image[:, right] = tmp
+
+    return out_image
 
 
 def rgb2gray(rgb):
@@ -159,17 +184,22 @@ if __name__ == "__main__":
         [3, 3, 5, 3, 3]
     ])
 
+    edge_image = padding(img2, 10, 'continue')
+
     # FILTER
     # imgOut = filter1(img, fmbig, 2)
     # origImage = img
 
     # FILTER 2
-    imgOut = filter2(img3, fm, 0, 'min')
-    origImage = img3
+    # imgOut = filter2(img3, fm, 0, 'min')
+    # origImage = img3
 
     # MEDIAN
-    # imgOut = median_filter(img2, 3, 1)
-    # origImage = img2
+    img2 = padding(img2, 101, 'continue')
+    imgOut = median_filter(img2, 3, 1)
+    print(len(img2))
+    print(len(imgOut))
+    origImage = img2
 
     # plot img
     plt.figure(1, dpi=300)
