@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 
 
-def derivativeHorizontal(imageIn, offset):
+def derivativeHorizontal(imageIn, scaling):
     sobelFilterHorizontal = np.array([
         [-1, 0, 1],
         [-2, 0, 2],
@@ -23,10 +23,10 @@ def derivativeHorizontal(imageIn, offset):
             elif imageIn[row][pixel] > 255:
                 imageIn[row][pixel] = 255
 
-    return filter(imageOut, sobelFilterHorizontal, offset, 'min')
+    return filter(imageOut, sobelFilterHorizontal, scaling, 'min')
 
 
-def derivativeVertical(imageIn, offset):
+def derivativeVertical(imageIn, scaling):
     sobelFilterVertical = np.array([
         [-1, -2, -1],
         [0, 0, 0],
@@ -44,7 +44,7 @@ def derivativeVertical(imageIn, offset):
             elif imageIn[row][pixel] > 255:
                 imageIn[row][pixel] = 255
 
-    return filter(imageOut, sobelFilterVertical, offset, 'min')
+    return filter(imageOut, sobelFilterVertical, scaling, 'min')
 
 
 def getEdgeThickness(imageHorizontal, imageVertical):
@@ -130,30 +130,35 @@ if __name__ == '__main__':
     # image = rgb2gray(imageRGB)
 
     offset = 2
+    scaling = 2
 
     # imageRGB = skm.imread('images/dot02.png')
     # image = rgb2gray(imageRGB)
 
-    image = skm.imread('images/fhorn.jpg')
+    imageOrg = skm.imread('images/fhorn.jpg')
 
-    image = padding(image, offset, 'continue')
-    imageHorizontal = derivativeHorizontal(image, offset)
-    imageVertical = derivativeVertical(image, offset)
+    image = padding(imageOrg, offset, 'min')
+    imageHorizontal = derivativeHorizontal(image, scaling)
+    imageVertical = derivativeVertical(image, scaling)
     edgeThickness = getEdgeThickness(imageHorizontal, imageVertical)
 
     print(edgeThickness)
 
     # plot original
     plt.figure(1, dpi=300)
-    plt.subplot(311)
-    plt.imshow(image, cmap=cm.Greys_r)
+    plt.subplot(411)
+    plt.imshow(imageOrg, cmap=cm.Greys_r)
     # plot horizontal
     plt.figure(1, dpi=300)
-    plt.subplot(312)
+    plt.subplot(412)
     plt.imshow(imageHorizontal, cmap=cm.Greys_r)
     # plot vertical
     plt.figure(1, dpi=300)
-    plt.subplot(313)
+    plt.subplot(413)
     plt.imshow(imageVertical, cmap=cm.Greys_r)
+    # plot edgeThickness
+    plt.figure(1, dpi=300)
+    plt.subplot(414)
+    plt.imshow(edgeThickness, cmap=cm.Greys_r)
 
     plt.show()
