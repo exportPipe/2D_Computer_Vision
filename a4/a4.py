@@ -8,12 +8,7 @@ import matplotlib.cm as cm
 # wieso so komisch bei dot01 und dot02
 # warum ist output abhängig von scaling
 
-def derivativeHorizontal(imageIn, scaling):
-    sobelFilterHorizontal = np.array([
-        [-1, 0, 1],
-        [-2, 0, 2],
-        [-1, 0, 1]
-    ])
+def derivativeHorizontal(imageIn):
 
     imageOut = np.empty((len(imageIn), len(imageIn[0])))
 
@@ -21,20 +16,18 @@ def derivativeHorizontal(imageIn, scaling):
         for pixel in range(0, len(imageIn[0]) - 1):
             pixelDerivative = (float(imageIn[row][pixel - 1]) - float(imageIn[row][pixel + 1])) / 2
             imageOut[row][pixel] = pixelDerivative
+
             if imageIn[row][pixel] < 0:
                 imageIn[row][pixel] = 0
             elif imageIn[row][pixel] > 255:
                 imageIn[row][pixel] = 255
 
-    return filter(imageOut, sobelFilterHorizontal, scaling, 'min')
+    # return filter(imageOut, sobelFilterHorizontal, scaling, 'min')
+    return imageOut
 
 
-def derivativeVertical(imageIn, scaling):
-    sobelFilterVertical = np.array([
-        [-1, -2, -1],
-        [0, 0, 0],
-        [1, 2, 1]
-    ])
+def derivativeVertical(imageIn):
+
 
     imageOut = np.empty((len(imageIn), len(imageIn[0])))
 
@@ -47,7 +40,8 @@ def derivativeVertical(imageIn, scaling):
             elif imageIn[row][pixel] > 255:
                 imageIn[row][pixel] = 255
 
-    return filter(imageOut, sobelFilterVertical, scaling, 'min')
+    # return filter(imageOut, sobelFilterVertical, scaling, 'min')
+    return imageOut
 
 
 def getEdgeThickness(imageHorizontal, imageVertical):
@@ -130,29 +124,50 @@ def rgb2gray(rgb):
     return gray
 
 
+def execute_sobel(derivate, hor_or_ver, scale, edge):
+    if hor_or_ver == 'hor':
+        sobelFilterHorizontal = np.array([
+            [-1, 0, 1],
+            [-2, 0, 2],
+            [-1, 0, 1]
+        ])
+        return filter(derivate, sobelFilterHorizontal, scale, edge)
+
+    if hor_or_ver == 'ver':
+        sobelFilterVertical = np.array([
+            [-1, -2, -1],
+            [0, 0, 0],
+            [1, 2, 1]
+        ])
+        return filter(derivate, sobelFilterVertical, scale, edge)
+
+
+
 if __name__ == '__main__':
-    # imageRGB = skm.imread('images/dot01.png')
-    # imageOrg = rgb2gray(imageRGB)
+    imageRGB = skm.imread('images/dot01.png')
+    imageOrg = rgb2gray(imageRGB)
 
     # imageRGB = skm.imread('images/dot02.png')
     # imageOrg = rgb2gray(imageRGB)
 
-    imageOrg = skm.imread('images/fhorn.jpg')
+    # imageOrg = skm.imread('images/fhorn.jpg')
 
     offset = 20
-    scaling = 2
+    scaling = 1
 
     imageOrg = padding(imageOrg, offset, 'max')
 
-    imageHorizontal = derivativeHorizontal(imageOrg, scaling)
-    imageVertical = derivativeVertical(imageOrg, scaling)
-    edgeThickness = getEdgeThickness(imageHorizontal, imageVertical)
+    imageHorizontal = derivativeHorizontal(imageOrg)
+    imageVertical = derivativeVertical(imageOrg)
 
-    # imageHorizontal = padding(imageHorizontal, 20, 'max')
-    # imageVertical = padding(imageVertical, 20, 'max')
-    # edgeThickness = padding(edgeThickness, 20, 'max')
+    imageHorizontalSobel = execute_sobel(imageHorizontal, 'hor', scaling, 'min')
+    imageVerticalSobel = execute_sobel(imageVertical, 'ver', scaling, 'min')
 
-    print(np.array_equal(imageVertical, imageHorizontal))
+    edgeThickness = getEdgeThickness(imageHorizontalSobel, imageVerticalSobel)
+
+    imageHorizontal = padding(imageHorizontal, 1, 'max')
+    imageVertical = padding(imageVertical, 1, 'max')
+    edgeThickness = padding(edgeThickness, 1, 'max')
 
     # print(edgeThickness)
 
@@ -174,3 +189,4 @@ if __name__ == '__main__':
     plt.imshow(edgeThickness, cmap=cm.Greys_r)
 
     plt.show()
+    exit(0)
