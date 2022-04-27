@@ -46,7 +46,6 @@ def derivativeVertical(imageIn):
 
 def getEdgeThickness(imageHorizontal, imageVertical):
     gradientAbsolute = np.sqrt(pow(imageHorizontal, 2) + pow(imageVertical, 2))
-
     return gradientAbsolute
 
 
@@ -87,14 +86,14 @@ def filter1(image, filter_mask, off):
 
     # IMAGE SIZE / should change width height?
     m, n = image.shape
-    if n > m:
-        m, n = n, m
+    # if n > m:
+    #     m, n = n, m
 
     # OUTPUT IMAGE / reshape to offset size
     out_image = np.resize(out_image, (round(m / off), round(n / off)))
 
     # SCALE s / one divided by sum of all coefficients
-    s = sum(sum(filter_mask))
+    s = sum(sum(abs(filter_mask)))
     if s == 0:
         s = 1
     else:
@@ -114,10 +113,10 @@ def filter1(image, filter_mask, off):
                     c = filter_mask[j + k][i + k]
                     total = total + c * p
             q = int(round(s * total))
-            if q < 0:
-                q = 0
-            if q > 255:
-                q = 255
+            # if q < 0:
+            #     q = 0
+            # if q > 255:
+            #     q = 255
             # setting q in img out
             out_image[floor(u / off)][floor(v / off)] = q
 
@@ -129,24 +128,6 @@ def rgb2gray(rgb):
     gray = 0.2989 * r + 0.5870 * g + 0.1140 * b
 
     return gray
-
-
-def execute_sobel(derivate, hor_or_ver, scale):
-    if hor_or_ver == 'hor':
-        sobelFilterHorizontal = np.array([
-            [-1, 0, 1],
-            [-2, 0, 2],
-            [-1, 0, 1]
-        ])
-        return filter1(derivate, sobelFilterHorizontal, scale)
-
-    if hor_or_ver == 'ver':
-        sobelFilterVertical = np.array([
-            [-1, -2, -1],
-            [0, 0, 0],
-            [1, 2, 1]
-        ])
-        return filter1(derivate, sobelFilterVertical, scale)
 
 
 
@@ -162,38 +143,64 @@ if __name__ == '__main__':
     offset = 20
     scaling = 1
 
-    imageOrg = padding(imageOrg, offset, 'max')
+    sobelFilterVertical = np.array([
+        [-1, -2, -1],
+        [0, 0, 0],
+        [1, 2, 1]
+    ])
 
-    imageHorizontal = derivativeHorizontal(imageOrg)
-    imageVertical = derivativeVertical(imageOrg)
+    sobelFilterHorizontal = np.array([
+        [-1, 0, 1],
+        [-2, 0, 2],
+        [-1, 0, 1]
+    ])
 
-    imageHorizontalSobel = execute_sobel(imageHorizontal, 'hor', scaling)
-    imageVerticalSobel = execute_sobel(imageVertical, 'ver', scaling)
+    image_hor = derivativeHorizontal(imageOrg)
+    image_ver = derivativeVertical(imageOrg)
 
-    edgeThickness = getEdgeThickness(imageHorizontalSobel, imageVerticalSobel)
+    DX = filter1(imageOrg, sobelFilterVertical, scaling)
+    DY = filter1(imageOrg, sobelFilterHorizontal, scaling)
 
-    imageHorizontal = padding(imageHorizontal, 1, 'max')
-    imageVertical = padding(imageVertical, 1, 'max')
-    edgeThickness = padding(edgeThickness, 1, 'max')
+    E = getEdgeThickness(DX, DY)
+    E2 = getEdgeThickness(image_ver, image_hor)
+
+
+
 
     # print(edgeThickness)
 
     # plot original
     plt.figure(1, dpi=300)
-    plt.subplot(411)
+    plt.subplot(111)
     plt.imshow(imageOrg, cmap=cm.Greys_r)
-    # plot horizontal
+    plt.show()
+    #
+    # # plot horizontal
+    # plt.figure(1, dpi=300)
+    # plt.subplot(311)
+    # plt.imshow(image_hor, cmap=cm.Greys_r)
+    # # plot vertical
+    # plt.figure(1, dpi=300)
+    # plt.subplot(312)
+    # plt.imshow(image_ver, cmap=cm.Greys_r)
+    # # plot edgeThickness
+    # plt.figure(1, dpi=300)
+    # plt.subplot(313)
+    # plt.imshow(E2, cmap=cm.Greys_r)
+    # plt.show()
+
+    # plot dx
     plt.figure(1, dpi=300)
-    plt.subplot(412)
-    plt.imshow(imageHorizontal, cmap=cm.Greys_r)
-    # plot vertical
+    plt.subplot(311)
+    plt.imshow(DX, cmap=cm.Greys_r)
+    # plot dy
     plt.figure(1, dpi=300)
-    plt.subplot(413)
-    plt.imshow(imageVertical, cmap=cm.Greys_r)
+    plt.subplot(312)
+    plt.imshow(DY, cmap=cm.Greys_r)
     # plot edgeThickness
     plt.figure(1, dpi=300)
-    plt.subplot(414)
-    plt.imshow(edgeThickness, cmap=cm.Greys_r)
+    plt.subplot(313)
+    plt.imshow(E, cmap=cm.Greys_r)
 
     plt.show()
     exit(0)
