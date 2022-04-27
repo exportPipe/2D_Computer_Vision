@@ -79,26 +79,34 @@ def padding(image, offset, edge):
 
 
 # a3
-def filter(image, filter_mask, off, edge):
+def filter1(image, filter_mask, off):
     if off == 0:
         off = 1
 
     out_image = np.copy(image)
 
+    # IMAGE SIZE / should change width height?
     m, n = image.shape
+    if n > m:
+        m, n = n, m
 
+    # OUTPUT IMAGE / reshape to offset size
     out_image = np.resize(out_image, (round(m / off), round(n / off)))
 
+    # SCALE s / one divided by sum of all coefficients
     s = sum(sum(filter_mask))
     if s == 0:
         s = 1
     else:
         s = 1 / s
 
+    # k is filter distance from current pixel
     k = floor(len(filter_mask) / 2)
 
+    # moving mask by offset
     for v in range(k, n - k, off):
         for u in range(k, m - k, off):
+            # collecting new pixel value q in mask area
             total = 0
             for j in range(-k, k + 1):
                 for i in range(-k, k + 1):
@@ -106,14 +114,13 @@ def filter(image, filter_mask, off, edge):
                     c = filter_mask[j + k][i + k]
                     total = total + c * p
             q = int(round(s * total))
-            if q <= 0 or q >= 255:
-                if edge == "min":
-                    q = 0
-                elif edge == "max":
-                    q = 255
-                elif edge == "continue":
-                    q = image[u + 1][v]
+            if q < 0:
+                q = 0
+            if q > 255:
+                q = 255
+            # setting q in img out
             out_image[floor(u / off)][floor(v / off)] = q
+
     return out_image
 
 
@@ -124,14 +131,14 @@ def rgb2gray(rgb):
     return gray
 
 
-def execute_sobel(derivate, hor_or_ver, scale, edge):
+def execute_sobel(derivate, hor_or_ver, scale):
     if hor_or_ver == 'hor':
         sobelFilterHorizontal = np.array([
             [-1, 0, 1],
             [-2, 0, 2],
             [-1, 0, 1]
         ])
-        return filter(derivate, sobelFilterHorizontal, scale, edge)
+        return filter1(derivate, sobelFilterHorizontal, scale)
 
     if hor_or_ver == 'ver':
         sobelFilterVertical = np.array([
@@ -139,7 +146,7 @@ def execute_sobel(derivate, hor_or_ver, scale, edge):
             [0, 0, 0],
             [1, 2, 1]
         ])
-        return filter(derivate, sobelFilterVertical, scale, edge)
+        return filter1(derivate, sobelFilterVertical, scale)
 
 
 
@@ -160,8 +167,8 @@ if __name__ == '__main__':
     imageHorizontal = derivativeHorizontal(imageOrg)
     imageVertical = derivativeVertical(imageOrg)
 
-    imageHorizontalSobel = execute_sobel(imageHorizontal, 'hor', scaling, 'min')
-    imageVerticalSobel = execute_sobel(imageVertical, 'ver', scaling, 'min')
+    imageHorizontalSobel = execute_sobel(imageHorizontal, 'hor', scaling)
+    imageVerticalSobel = execute_sobel(imageVertical, 'ver', scaling)
 
     edgeThickness = getEdgeThickness(imageHorizontalSobel, imageVerticalSobel)
 
