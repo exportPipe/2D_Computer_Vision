@@ -4,8 +4,9 @@ import skimage.io as skm
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 
-# padding funktioniert nicht richtig
+
 # wieso so komisch bei dot01 und dot02
+# warum ist output abhängig von scaling
 
 def derivativeHorizontal(imageIn, scaling):
     sobelFilterHorizontal = np.array([
@@ -55,6 +56,7 @@ def getEdgeThickness(imageHorizontal, imageVertical):
     return gradientAbsolute
 
 
+# a3
 def padding(image, offset, edge):
     height, width = image.shape
     out_image = np.zeros((height + offset * 2, width + offset * 2))
@@ -70,7 +72,7 @@ def padding(image, offset, edge):
             out_image[top, offset: offset + width] = tmp
         tmp = image[top]
         for bot in range(height + offset, height + 2 * offset):
-             out_image[bot, offset: offset + height] = tmp
+            out_image[bot, offset: offset + height] = tmp
         out_image[offset: -offset, offset: -offset] = image
         tmp = out_image[:, offset]
         for left in range(0, offset):
@@ -82,6 +84,7 @@ def padding(image, offset, edge):
     return out_image
 
 
+# a3
 def filter(image, filter_mask, off, edge):
     if off == 0:
         off = 1
@@ -131,13 +134,13 @@ if __name__ == '__main__':
     # imageRGB = skm.imread('images/dot01.png')
     # imageOrg = rgb2gray(imageRGB)
 
+    # imageRGB = skm.imread('images/dot02.png')
+    # imageOrg = rgb2gray(imageRGB)
+
+    imageOrg = skm.imread('images/fhorn.jpg')
+
     offset = 20
     scaling = 2
-
-    imageRGB = skm.imread('images/dot02.png')
-    imageOrg = rgb2gray(imageRGB)
-
-    # imageOrg = skm.imread('images/fhorn.jpg')
 
     imageOrg = padding(imageOrg, offset, 'max')
 
@@ -149,7 +152,9 @@ if __name__ == '__main__':
     # imageVertical = padding(imageVertical, 20, 'max')
     # edgeThickness = padding(edgeThickness, 20, 'max')
 
-    print(edgeThickness)
+    print(np.array_equal(imageVertical, imageHorizontal))
+
+    # print(edgeThickness)
 
     # plot original
     plt.figure(1, dpi=300)
