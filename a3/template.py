@@ -195,10 +195,8 @@ if __name__ == "__main__":
     # origImage = img3
 
     # MEDIAN
-    img2 = padding(img2, 101, 'continue')
+    img2 = padding(img2, 101, 'max')
     imgOut = median_filter(img2, 3, 1)
-    print(len(img2))
-    print(len(imgOut))
     origImage = img2
 
     # plot img
