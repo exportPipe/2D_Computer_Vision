@@ -1,0 +1,10 @@
+2)
+    a) Veränderung der Intensität, Extrempunkt der ersten Ableitung, Nullpunkt der zweiten Ableitung
+    b) Die partiellen Ableitungen stellen die Kanten in horizontaler bzw. vertikaler Richtung da
+    c) Der Vektor der horizontalen und der vertikalen Ableitung (Betrag stellt isotropische(kantenunabhängige) Kante da)
+    d) Kantenstärke ist der Betrag des Gradienten
+    e) Winkel = tan^-1 (Dy(u,v)/Dx(u,v))
+
+3)
+    a) Linearer Glättungsoperator unterdrückt Rauschen, verursacht aber Unschärfe an den Kanten
+    b) Roberts-Operator, Kompass-Operatoren, Canny-Filter

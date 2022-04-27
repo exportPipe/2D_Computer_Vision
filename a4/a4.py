@@ -4,6 +4,8 @@ import skimage.io as skm
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 
+# padding funktioniert nicht richtig
+# wieso so komisch bei dot01 und dot02
 
 def derivativeHorizontal(imageIn, scaling):
     sobelFilterHorizontal = np.array([
@@ -127,20 +129,25 @@ def rgb2gray(rgb):
 
 if __name__ == '__main__':
     # imageRGB = skm.imread('images/dot01.png')
-    # image = rgb2gray(imageRGB)
+    # imageOrg = rgb2gray(imageRGB)
 
-    offset = 2
+    offset = 20
     scaling = 2
 
-    # imageRGB = skm.imread('images/dot02.png')
-    # image = rgb2gray(imageRGB)
+    imageRGB = skm.imread('images/dot02.png')
+    imageOrg = rgb2gray(imageRGB)
 
-    imageOrg = skm.imread('images/fhorn.jpg')
+    # imageOrg = skm.imread('images/fhorn.jpg')
 
-    image = padding(imageOrg, offset, 'min')
-    imageHorizontal = derivativeHorizontal(image, scaling)
-    imageVertical = derivativeVertical(image, scaling)
+    imageOrg = padding(imageOrg, offset, 'max')
+
+    imageHorizontal = derivativeHorizontal(imageOrg, scaling)
+    imageVertical = derivativeVertical(imageOrg, scaling)
     edgeThickness = getEdgeThickness(imageHorizontal, imageVertical)
+
+    # imageHorizontal = padding(imageHorizontal, 20, 'max')
+    # imageVertical = padding(imageVertical, 20, 'max')
+    # edgeThickness = padding(edgeThickness, 20, 'max')
 
     print(edgeThickness)
 
