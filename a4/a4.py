@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 
 
-def derivativeHorizontal(imageIn):
+def derivativeHorizontal(imageIn, offset):
     sobelFilterHorizontal = np.array([
         [-1, 0, 1],
         [-2, 0, 2],
@@ -16,17 +16,17 @@ def derivativeHorizontal(imageIn):
 
     for row in range(0, len(imageIn) - 1):
         for pixel in range(0, len(imageIn[0]) - 1):
-            pixelDerivate = (float(imageIn[row][pixel - 1]) - float(imageIn[row][pixel + 1])) / 2
-            imageOut[row][pixel] = pixelDerivate
+            pixelDerivative = (float(imageIn[row][pixel - 1]) - float(imageIn[row][pixel + 1])) / 2
+            imageOut[row][pixel] = pixelDerivative
             if imageIn[row][pixel] < 0:
                 imageIn[row][pixel] = 0
             elif imageIn[row][pixel] > 255:
                 imageIn[row][pixel] = 255
 
-    return filter(imageOut, sobelFilterHorizontal, 0, 'min')
+    return filter(imageOut, sobelFilterHorizontal, offset, 'min')
 
 
-def derivativeVertical(imageIn):
+def derivativeVertical(imageIn, offset):
     sobelFilterVertical = np.array([
         [-1, -2, -1],
         [0, 0, 0],
@@ -37,20 +37,47 @@ def derivativeVertical(imageIn):
 
     for row in range(0, len(imageIn) - 1):
         for pixel in range(0, len(imageIn[0]) - 1):
-            pixelDerivate = (float(imageIn[row - 1][pixel]) - float(imageIn[row + 1][pixel])) / 2
-            imageOut[row][pixel] = pixelDerivate
+            pixelDerivative = (float(imageIn[row - 1][pixel]) - float(imageIn[row + 1][pixel])) / 2
+            imageOut[row][pixel] = pixelDerivative
             if imageIn[row][pixel] < 0:
                 imageIn[row][pixel] = 0
             elif imageIn[row][pixel] > 255:
                 imageIn[row][pixel] = 255
 
-    return filter(imageOut, sobelFilterVertical, 0, 'min')
+    return filter(imageOut, sobelFilterVertical, offset, 'min')
 
 
 def getEdgeThickness(imageHorizontal, imageVertical):
-    gradientAbsolut = np.sqrt(pow(imageHorizontal, 2) + pow(imageVertical, 2))
+    gradientAbsolute = np.sqrt(pow(imageHorizontal, 2) + pow(imageVertical, 2))
 
-    return gradientAbsolut
+    return gradientAbsolute
+
+
+def padding(image, offset, edge):
+    height, width = image.shape
+    out_image = np.zeros((height + offset * 2, width + offset * 2))
+    if edge == 'min':
+        out_image[offset: -offset, offset: -offset] = image
+    if edge == 'max':
+        out_image = (out_image + 1) * 255
+        out_image[offset: -offset, offset: -offset] = image
+
+    if edge == 'continue':
+        tmp = image[0]
+        for top in range(0, offset):
+            out_image[top, offset: offset + width] = tmp
+        tmp = image[top]
+        for bot in range(height + offset, height + 2 * offset):
+             out_image[bot, offset: offset + height] = tmp
+        out_image[offset: -offset, offset: -offset] = image
+        tmp = out_image[:, offset]
+        for left in range(0, offset):
+            out_image[:, left] = tmp
+        tmp = out_image[:, width - offset]
+        for right in range(width + offset, width + 2 * offset):
+            out_image[:, right] = tmp
+
+    return out_image
 
 
 def filter(image, filter_mask, off, edge):
@@ -102,13 +129,16 @@ if __name__ == '__main__':
     # imageRGB = skm.imread('images/dot01.png')
     # image = rgb2gray(imageRGB)
 
+    offset = 2
+
     # imageRGB = skm.imread('images/dot02.png')
     # image = rgb2gray(imageRGB)
 
     image = skm.imread('images/fhorn.jpg')
 
-    imageHorizontal = derivativeHorizontal(image)
-    imageVertical = derivativeVertical(image)
+    image = padding(image, offset, 'continue')
+    imageHorizontal = derivativeHorizontal(image, offset)
+    imageVertical = derivativeVertical(image, offset)
     edgeThickness = getEdgeThickness(imageHorizontal, imageVertical)
 
     print(edgeThickness)
