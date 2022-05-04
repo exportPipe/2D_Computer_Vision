@@ -1,75 +1,10 @@
 import math
 from math import floor
 
-import skimage.util
 from skimage import io
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
-
-
-def filter2(image, filter_mask, scale, edge):
-    if scale == 0:
-        scale = 1
-
-    out_image = np.copy(image)
-
-    m, n = image.shape
-    if n > m:
-        m, n = n, m
-
-    out_image = np.resize(out_image, (round(m / scale), round(n / scale)))
-
-    s = sum(sum(filter_mask))
-    if s == 0:
-        s = 1
-    else:
-        s = 1 / s
-
-    k = floor(len(filter_mask) / 2)
-
-    for v in range(k, n - k, scale):
-        for u in range(k, m - k, scale):
-            total = 0
-            for j in range(-k, k + 1):
-                for i in range(-k, k + 1):
-                    p = image[u + i][v + j]
-                    c = filter_mask[j + k][i + k]
-                    total = total + c * p
-            q = int(round(s * total))
-            if q <= 0 or q >= 255:
-                if edge == "min":
-                    q = 0
-                elif edge == "max":
-                    q = 255
-                elif edge == "continue":
-                    q = image[u + 1][v]
-            out_image[floor(u / scale)][floor(v / scale)] = q
-    return out_image
-
-
-def median_filter(in_image, filter_size, offset):
-    if offset == 0:
-        offset = 1
-    copy = np.copy(in_image)
-    m, n = copy.shape
-    if n > m:
-        m, n = n, m
-    copy = np.resize(copy, (round(m / offset), round(n / offset)))
-
-    p = np.ndarray(filter_size ** 2, dtype=int)
-
-    for v in range(1, m - filter_size - 1, offset):
-        for u in range(1, n - filter_size - 1, offset):
-            k = 0
-            for j in range(-floor(filter_size / 2), floor(filter_size / 2) + 1):
-                for i in range(-floor(filter_size / 2), floor(filter_size / 2) + 1):
-                    p[k] = in_image[u + i][v + j]
-                    k += 1
-            p = np.sort(p, kind='heapsort')
-
-            copy[floor(u / offset)][floor(v / offset)] = p[floor(len(p) / 2)]
-    return copy
 
 
 def padding(image, offset, edge):
@@ -149,11 +84,12 @@ def linear_ht(im_edge, angle_steps: int, radius_steps: int):
 
 def threshold_operation(hough_array, threshold):
     width, height = hough_array.shape
+    copy = hough_array.copy()
     for v in range(0, height):
         for u in range(0, width):
-            if hough_array[u][v] < threshold:
-                hough_array[u][v] = 0
-    return hough_array
+            if hough_array[u][v] > threshold:
+                copy[u][v] = 0
+    return copy
 
 
 if __name__ == "__main__":
@@ -162,22 +98,31 @@ if __name__ == "__main__":
     # convert to numpy array
     img = np.array(img)
 
-    hough_arr = linear_ht(img, 255, 255)
+    hough_arr = linear_ht(img, 100, 100)
+
     hough_arr_inv = invert_gray(hough_arr)
-    # hough_arr = threshold_operation(hough_arr_inv, 126)
+
+    t = round(np.amax(hough_arr) / 2)
+    hough_arr_threshold = threshold_operation(hough_arr, t)
 
     # plot img
     plt.figure(1, dpi=300)
     plt.subplot(211)
     plt.imshow(img, cmap=cm.Greys_r)
-    # plot imgOut
+    # plot hough array
     plt.figure(1, dpi=300)
     plt.subplot(212)
     plt.imshow(hough_arr, cmap=cm.Greys_r)
+    plt.show()
 
-    # plt.figure(1, dpi=300)
-    # plt.subplot(313)
-    # plt.imshow(hough_arr_inv, cmap=cm.Greys_r)
+    # plot hough
+    plt.figure(1, dpi=300)
+    plt.subplot(211)
+    plt.imshow(hough_arr, cmap=cm.Greys_r)
+    # plot hough max
+    plt.figure(1, dpi=300)
+    plt.subplot(212)
+    plt.imshow(hough_arr_threshold, cmap=cm.Greys_r)
     plt.show()
 
     exit(0)
