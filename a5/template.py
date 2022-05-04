@@ -26,7 +26,7 @@ def linear_ht(im_edge, angle_steps: int, radius_steps: int):
     d_rad = (2 * r_max) / n_rad
     hough_array = np.zeros((n_ang, n_rad))
 
-    def fill_hough_accumulutor():
+    def fill_hough_accumulator():
         for v in range(0, height):
             for u in range(0, width):
                 if im_edge[u][v] > 0:
@@ -43,7 +43,7 @@ def linear_ht(im_edge, angle_steps: int, radius_steps: int):
             if 0 <= r < n_rad:
                 hough_array[a][r] += 1
 
-    fill_hough_accumulutor()
+    fill_hough_accumulator()
     return hough_array
 
 
