@@ -17,8 +17,8 @@ def invert_gray(image):
 
 def linear_ht(im_edge, angle_steps: int, radius_steps: int):
     width, height = im_edge.shape
-    x_ctr = round(width / 2)
-    y_ctr = round(height / 2)
+    x_ctr = int(width / 2)
+    y_ctr = int(height / 2)
     n_ang = angle_steps
     d_ang = math.pi / angle_steps
     n_rad = radius_steps
@@ -35,11 +35,11 @@ def linear_ht(im_edge, angle_steps: int, radius_steps: int):
     def do_pixel(u, v):
         x = u - x_ctr
         y = v - y_ctr
-        for a in range(0, n_ang):
+        for a in range(n_ang):
             theta = d_ang * a
             r = round(
                 (x * math.cos(theta) + y * math.sin(theta)) / d_rad) + n_rad / 2
-            r = round(r)
+            r = int(r)
             if 0 <= r < n_rad:
                 hough_array[a][r] += 1
 
@@ -50,8 +50,8 @@ def linear_ht(im_edge, angle_steps: int, radius_steps: int):
 def threshold_operation(hough_array, threshold):
     width, height = hough_array.shape
     copy = hough_array.copy()
-    for v in range(0, height):
-        for u in range(0, width):
+    for v in range(height):
+        for u in range(width):
             if hough_array[u][v] < threshold:
                 copy[u][v] = 0
     return copy
@@ -59,11 +59,12 @@ def threshold_operation(hough_array, threshold):
 
 if __name__ == "__main__":
     # read img
-    img = io.imread("images/noisy-lines.tif")
+    img = io.imread("images/airfield02g.tif")
     # convert to numpy array
     img = np.array(img)
 
-    hough_arr = linear_ht(img, 250, 250)
+    hough_arr = linear_ht(img, 200, 250)
+    hough_arr = hough_arr.T
 
     t = round(np.amax(hough_arr) / 2)
     hough_arr_threshold = threshold_operation(hough_arr, t)
