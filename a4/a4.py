@@ -46,6 +46,7 @@ def derivativeVertical(imageIn):
 
 def getEdgeThickness(imageHorizontal, imageVertical):
     gradientAbsolute = np.sqrt(pow(imageHorizontal, 2) + pow(imageVertical, 2))
+
     return gradientAbsolute
 
 
@@ -203,4 +204,3 @@ if __name__ == '__main__':
     plt.imshow(E, cmap=cm.Greys_r)
 
     plt.show()
-    exit(0)
