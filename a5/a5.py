@@ -29,7 +29,7 @@ def linear_ht(im_edge, angle_steps: int, radius_steps: int):
     def fill_hough_accumulator():
         for v in range(0, height):
             for u in range(0, width):
-                if im_edge[u][v] > 0:
+                if im_edge[u][v] == 0:
                     do_pixel(u, v)
 
     def do_pixel(u, v):
@@ -52,7 +52,7 @@ def threshold_operation(hough_array, threshold):
     copy = hough_array.copy()
     for v in range(0, height):
         for u in range(0, width):
-            if hough_array[u][v] > threshold:
+            if hough_array[u][v] < threshold:
                 copy[u][v] = 0
     return copy
 
@@ -63,9 +63,7 @@ if __name__ == "__main__":
     # convert to numpy array
     img = np.array(img)
 
-    hough_arr = linear_ht(img, 100, 100)
-
-    hough_arr_inv = invert_gray(hough_arr)
+    hough_arr = linear_ht(img, 250, 250)
 
     t = round(np.amax(hough_arr) / 2)
     hough_arr_threshold = threshold_operation(hough_arr, t)
@@ -77,17 +75,17 @@ if __name__ == "__main__":
     # plot hough array
     plt.figure(1, dpi=300)
     plt.subplot(212)
-    plt.imshow(hough_arr, cmap=cm.Greys_r)
+    plt.imshow(hough_arr, cmap=cm.Greys)
     plt.show()
 
     # plot hough
     plt.figure(1, dpi=300)
     plt.subplot(211)
-    plt.imshow(hough_arr, cmap=cm.Greys_r)
+    plt.imshow(hough_arr, cmap=cm.Greys)
     # plot hough max
     plt.figure(1, dpi=300)
     plt.subplot(212)
-    plt.imshow(hough_arr_threshold, cmap=cm.Greys_r)
+    plt.imshow(hough_arr_threshold, cmap=cm.Greys)
     plt.show()
 
     exit(0)
