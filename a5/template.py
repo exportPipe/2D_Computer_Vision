@@ -1,44 +1,9 @@
 import math
-from math import floor
 
 from skimage import io
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
-
-
-def padding(image, offset, edge):
-    height, width = image.shape
-    out_image = np.zeros((height + offset * 2, width + offset * 2))
-    if edge == 'min':
-        out_image[offset: -offset, offset: -offset] = image
-    if edge == 'max':
-        out_image = (out_image + 1) * 255
-        out_image[offset: -offset, offset: -offset] = image
-
-    if edge == 'continue':
-        tmp = image[0]
-        for top in range(0, offset):
-            out_image[top, offset: offset + width] = tmp
-        tmp = image[top]
-        for bot in range(height + offset, height + 2 * offset):
-            out_image[bot, offset: offset + height] = tmp
-        out_image[offset: -offset, offset: -offset] = image
-        tmp = out_image[:, offset]
-        for left in range(0, offset):
-            out_image[:, left] = tmp
-        tmp = out_image[:, width - offset]
-        for right in range(width + offset, width + 2 * offset):
-            out_image[:, right] = tmp
-
-    return out_image
-
-
-def rgb2gray(rgb):
-    r, g, b = rgb[:, :, 0], rgb[:, :, 1], rgb[:, :, 2]
-    gray = 0.2989 * r + 0.5870 * g + 0.1140 * b
-
-    return gray
 
 
 def invert_gray(image):
