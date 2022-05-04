@@ -1,3 +1,4 @@
+import math
 from math import floor
 
 from skimage import io
@@ -104,17 +105,45 @@ def rgb2gray(rgb):
     return gray
 
 
-def linear_ht(im_edge, angle_steps, radius_steps):
-    pass
+def linear_ht(im_edge, angle_steps: int, radius_steps: int):
+    width, height = im_edge.shape
+    x_ctr = floor(width / 2)
+    y_ctr = floor(height / 2)
+    n_ang = angle_steps
+    d_ang = math.pi / angle_steps
+    n_rad = radius_steps
+    r_max = math.sqrt(x_ctr * x_ctr + y_ctr * y_ctr)
+    d_rad = (2 * r_max) / n_rad
+    hough_array = np.zeros((n_ang, n_rad))
+
+    def fill_hough_accumulutor():
+        for v in range(0, height):
+            for u in range(0, width):
+                if im_edge[u][v] > 0:
+                    do_pixel(u, v)
+
+    def do_pixel(u, v):
+        x = u - x_ctr
+        y = v - y_ctr
+        for a in range(0, n_ang):
+            theta = d_ang * a
+            r = round(
+                (x * math.cos(theta) + y * math.sin(theta)) / d_rad) + n_rad / 2
+            r = round(r)
+            if 0 <= r < n_rad:
+                hough_array[a][r] = hough_array[a][r] + 1
+
+    fill_hough_accumulutor()
+    return hough_array
 
 
 if __name__ == "__main__":
     # read img
-    img = io.imread("images/airfield02g.tif")
+    img = io.imread("images/noisy-lines.tif")
     # convert to numpy array
     img = np.array(img)
 
-    edge_image = padding(img, 2, 'min')
+    hough_arr = linear_ht(img, 100, 100)
 
     # plot img
     plt.figure(1, dpi=300)
@@ -123,7 +152,7 @@ if __name__ == "__main__":
     # plot imgOut
     plt.figure(1, dpi=300)
     plt.subplot(212)
-    plt.imshow(edge_image, cmap=cm.Greys_r)
-
+    plt.imshow(hough_arr, cmap=cm.Greys_r)
     plt.show()
+
     exit(0)
