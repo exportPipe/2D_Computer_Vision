@@ -1,4 +1,4 @@
-import math
+from math import floor
 
 from skimage import io
 import numpy as np
@@ -6,68 +6,45 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 
 
-def invert_gray(image):
-    w, h = image.shape
-    copy = image.copy()
-    for v in range(0, w):
-        for u in range(0, h):
-            copy[u][v] = 255 - image[u][v]
+def dilate(in_image, filter_h, iter_num):
+    width, height = in_image.shape
+    copy = in_image.copy()
+
+    k = floor(len(filter_h) / 2)
+    tmp = []
+    for iteration in range(iter_num):
+        for v in range(k, height - k):
+            for u in range(k, width - k):
+                for j in range(-k, k + 1):
+                    for i in range(-k, k + 1):
+                        tmp.append(in_image[u + i][v + j] + filter_h[i + k][j + k])
+                copy[u][v] = max(tmp)
+                if copy[u][v] > 255:
+                    copy[u][v] = 255
+                if copy[u][v] < 0:
+                    copy[u][v] = 0
+                tmp.clear()
     return copy
 
 
-def linear_ht(im_edge, angle_steps: int, radius_steps: int):
-    width, height = im_edge.shape
-    x_ctr = int(width / 2)
-    y_ctr = int(height / 2)
-    n_ang = angle_steps
-    d_ang = math.pi / angle_steps
-    n_rad = radius_steps
-    r_max = math.sqrt(x_ctr * x_ctr + y_ctr * y_ctr)
-    d_rad = (2 * r_max) / n_rad
-    hough_array = np.zeros((n_ang, n_rad))
-
-    def fill_hough_accumulator():
-        for v in range(0, height):
-            for u in range(0, width):
-                if im_edge[u][v] == 0:
-                    do_pixel(u, v)
-
-    def do_pixel(u, v):
-        x = u - x_ctr
-        y = v - y_ctr
-        for a in range(n_ang):
-            theta = d_ang * a
-            r = round(
-                (x * math.cos(theta) + y * math.sin(theta)) / d_rad) + n_rad / 2
-            r = int(r)
-            if 0 <= r < n_rad:
-                hough_array[a][r] += 1
-
-    fill_hough_accumulator()
-    return hough_array
-
-
-def threshold_operation(hough_array, threshold):
-    width, height = hough_array.shape
-    copy = hough_array.copy()
-    for v in range(height):
-        for u in range(width):
-            if hough_array[u][v] < threshold:
-                copy[u][v] = 0
-    return copy
+def erode(in_image, filter_h, iter_num):
+    in_image = in_image.T
+    in_image = dilate(in_image, filter_h, iter_num)
+    return in_image.T
 
 
 if __name__ == "__main__":
     # read img
-    img = io.imread("images/airfield02g.tif")
+    img = io.imread("images/fhorn.jpg")
     # convert to numpy array
     img = np.array(img)
 
-    hough_arr = linear_ht(img, 200, 250)
-    hough_arr = hough_arr.T
-
-    t = round(np.amax(hough_arr) / 2)
-    hough_arr_threshold = threshold_operation(hough_arr, t)
+    H = np.array([[0, 0, 0],
+                  [0, 1, 1],
+                  [0, 0, 0]])
+    eroded_img = erode(img, H, 2)
+    # dilated_image = dilate(img, H, 2)
+    # dilated_image_iter = dilate(img, H, 4)
 
     # plot img
     plt.figure(1, dpi=300)
@@ -76,17 +53,17 @@ if __name__ == "__main__":
     # plot hough array
     plt.figure(1, dpi=300)
     plt.subplot(212)
-    plt.imshow(hough_arr, cmap=cm.Greys)
+    plt.imshow(eroded_img, cmap=cm.Greys_r)
     plt.show()
 
-    # plot hough
-    plt.figure(1, dpi=300)
-    plt.subplot(211)
-    plt.imshow(hough_arr, cmap=cm.Greys)
-    # plot hough max
-    plt.figure(1, dpi=300)
-    plt.subplot(212)
-    plt.imshow(hough_arr_threshold, cmap=cm.Greys)
-    plt.show()
+    # # plot hough
+    # plt.figure(1, dpi=300)
+    # plt.subplot(211)
+    # plt.imshow(img, cmap=cm.Greys_r)
+    # # plot hough max
+    # plt.figure(1, dpi=300)
+    # plt.subplot(212)
+    # plt.imshow(dilated_image_iter, cmap=cm.Greys)
+    # plt.show()
 
     exit(0)
