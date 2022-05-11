@@ -61,15 +61,12 @@ if __name__ == "__main__":
                    [0, 1, 1],
                    [0, 0, 0]])
 
-    dilated_image = dilate(img, h1)
+    dilated_image = dilate(img, h2)
+
+    eroded_img = erode(img, h2)
     # tmp = img.copy()
     # for i in range(5):
     #     tmp = erode(tmp, h1)
-
-
-
-    # dilated_image = dilate(img, h2)
-    # eroded_img = erode(img, h2)
 
     plt.figure(1, dpi=300)
     plt.subplot(211)
@@ -79,12 +76,12 @@ if __name__ == "__main__":
     plt.imshow(dilated_image, cmap=cm.Greys_r)
     plt.show()
 
-    # plt.figure(1, dpi=300)
-    # plt.subplot(211)
-    # plt.imshow(img, cmap=cm.Greys_r)
-    # plt.figure(1, dpi=300)
-    # plt.subplot(212)
-    # plt.imshow(tmp, cmap=cm.Greys_r)
-    # plt.show()
+    plt.figure(1, dpi=300)
+    plt.subplot(211)
+    plt.imshow(img, cmap=cm.Greys_r)
+    plt.figure(1, dpi=300)
+    plt.subplot(212)
+    plt.imshow(eroded_img, cmap=cm.Greys_r)
+    plt.show()
 
     exit(0)
