@@ -1,4 +1,4 @@
-from math import floor
+
 
 from skimage import io
 import numpy as np
@@ -6,74 +6,89 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 
 
-def dilate(in_image, filter_h):
+def get_binary(in_image, threshold):
+    return 1 * (in_image > threshold)
+
+
+def get_regions(in_image):
+    # m
+    label = 2
+
+    c = list()
+    tmp = list()
+
     width, height = in_image.shape
-    copy = in_image.copy()
+    # current pixel
+    for v in range(1, height - 1):
+        for u in range(1, width - 1):
+            if in_image[u][v] == 1:
+                # current neighbors
+                for j in range(-1, 2):
+                    for i in range(-1, 2):
+                        tmp.append(in_image[u][v])
 
-    k = floor(len(filter_h) / 2)
-    tmp = []
-    for v in range(k, height - k):
-        for u in range(k, width - k):
-            for j in range(-k, k + 1):
-                for i in range(-k, k + 1):
-                    tmp.append(in_image[u + i][v + j] + filter_h[i + k][j + k])
-            copy[u][v] = max(tmp)
-            if copy[u][v] > 255:
-                copy[u][v] = 255
-            if copy[u][v] < 0:
-                copy[u][v] = 0
-            tmp.clear()
-    return copy
+                # all neighbors are background ( = 0)
+                if sum(tmp) == 0:
+                    print(f'seperated region at {u} {v}')
+                    in_image[u][v] = label
+                    label += 1
+                    continue
 
-
-def erode(in_image, filter_h):
-    width, height = in_image.shape
-    copy = in_image.copy()
-
-    k = floor(len(filter_h) / 2)
-    tmp = []
-    for v in range(k, height - k):
-        for u in range(k, width - k):
-            for j in range(-k, k + 1):
-                for i in range(-k, k + 1):
-                    tmp.append(in_image[u + i][v + j] - filter_h[i + k][j + k])
-            copy[u][v] = min(tmp)
-            if copy[u][v] > 255:
-                copy[u][v] = 255
-            if copy[u][v] < 0:
-                copy[u][v] = 0
-            tmp.clear()
-    return copy
+                # TODO not working
+                # exactly one is already labeled ( > 1)
+                # or at least two are labeled
+                # or all neighbors are labeled
+                tmp.sort(reverse=True)
+                print(tmp)
+                one_labeled = False
+                two_labeled = False
+                all_labeled = False
+                count = 0
+                for i in tmp:
+                    if count == 0 and i > 1:
+                        one_labeled = True
+                    if count > 0 and i > 1:
+                        if one_labeled:
+                            two_labeled = True
+                        one_labeled = False
+                    if count == len(tmp) and i > 1:
+                        all_labeled = True
+                    count += 1
+                count = 1
+                if one_labeled:
+                    print('one labeled')
+                    in_image[u][v] = tmp[0]
+                    continue
+                if two_labeled or all_labeled:
+                    print('two labeled')
+                    in_image[u][v] = tmp[0]
+                if all_labeled:
+                    print('all labeled')
+                    if tmp[count] > 1 and tmp[count] != tmp[0]:
+                        c.append((tmp[count], tmp[0]))
+                    count += 1
+                tmp.clear()
+    return in_image
 
 
 if __name__ == "__main__":
     # read img
-    img = io.imread("images/fhorn.jpg")
+    img = io.imread("images/regionen1.png")
     # convert to numpy array
     img = np.array(img).astype(np.int16)
 
-    h1 = np.array([[0, 0, 0, 0, 0],
-                   [0, 1, 1, 1, 0],
-                   [0, 1, 1, 1, 0],
-                   [0, 1, 1, 1, 0],
-                   [0, 0, 0, 0, 0]])
-    h2 = np.array([[0, 0, 0],
-                   [0, 1, 1],
-                   [0, 0, 0]])
+    # convert to binary - is working :)
+    binary_img = get_binary(img, 150)
 
-    dilated_image = dilate(img, h2)
-
-    eroded_img = erode(img, h2)
-    # tmp = img.copy()
-    # for i in range(5):
-    #     tmp = erode(tmp, h1)
+    # get regions
+    regions = get_regions(binary_img)
 
     plt.figure(1, dpi=300)
     plt.subplot(211)
     plt.imshow(img, cmap=cm.Greys_r)
     plt.figure(1, dpi=300)
     plt.subplot(212)
-    plt.imshow(dilated_image, cmap=cm.Greys_r)
+    plt.imshow(img, cmap=cm.Greys_r)
     plt.show()
 
     plt.figure(1, dpi=300)
@@ -81,7 +96,7 @@ if __name__ == "__main__":
     plt.imshow(img, cmap=cm.Greys_r)
     plt.figure(1, dpi=300)
     plt.subplot(212)
-    plt.imshow(eroded_img, cmap=cm.Greys_r)
+    plt.imshow(binary_img, cmap=cm.Greys_r)
     plt.show()
 
     exit(0)
