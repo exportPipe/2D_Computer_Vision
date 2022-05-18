@@ -64,7 +64,7 @@ def get_regions(in_image):
                     in_image[u][v] = neighbors[0]
                     for neighbor in neighbors:
                         if neighbor != neighbors[0] and neighbor > 1:
-                            collisions.append((neighbor, neighbors[0]))
+                            collisions.append((neighbors[count], neighbors[0]))
                         print(collisions)
                 neighbors.clear()
 
@@ -83,17 +83,20 @@ def get_regions(in_image):
     for i in labels:
         labels_R.append({i})
 
-    print(labels_R)
-
-    # TODO: finde beide Listen in labels_R, die je einen der beiden Kollisionswerte enthalten und merge sie
-    # ...
     res = set
     for collision in collisions:
         for label in labels_R:
             res = res.union(set(collision).union(label))
-    
+
     print(res)
-    
+
+    # PASS 3
+    for v in range(height):
+        for u in range(width):
+            if copy[u][v]:
+                # find min key and replace
+                pass
+
     return copy
 
 
