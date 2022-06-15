@@ -4,6 +4,7 @@ from skimage import io
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
+import datetime
 
 
 def rgb2gray(rgb):
@@ -32,8 +33,13 @@ def dilate(in_image, filter_h):
     return copy
 
 if __name__ == "__main__":
+
+    now = datetime.datetime.now()
+    print(now.strftime("%Y-%m-%d %H:%M:%S"))
     # read img
-    img = io.imread("images/fhorn.jpg")
+    #img = io.imread("images/buchstaben.jpg")
+    #img = io.imread("images/buchstaben1.jpg")
+    img = io.imread("images/Buchstabenklein.jpg")
     # convert to numpy array
     img = np.array(img).astype(np.int16)
 
@@ -46,4 +52,23 @@ if __name__ == "__main__":
                    [0, 1, 1],
                    [0, 0, 0]])
 
-    dilated_image = dilate(img, h2)
+    imggray = rgb2gray(img)
+
+    plt.figure(1, dpi=300)
+    plt.imshow(imggray, cmap=cm.Greys_r)
+    plt.show()
+
+    dilated_image = dilate(imggray, h1)
+
+    plt.figure(1, dpi=300)
+    plt.subplot(211)
+    plt.imshow(img, cmap=cm.Greys_r)
+    plt.figure(1, dpi=300)
+    plt.subplot(212)
+    plt.imshow(dilated_image, cmap=cm.Greys_r)
+    plt.show()
+
+    now = datetime.datetime.now()
+    print(now.strftime("%Y-%m-%d %H:%M:%S"))
+
+    exit(0)
