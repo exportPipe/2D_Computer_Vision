@@ -116,13 +116,13 @@ if __name__ == "__main__":
 
     dilated_image = dilate(imggray, h1)
 
-    plt.figure(1, dpi=300)
-    plt.subplot(211)
-    plt.imshow(img, cmap=cm.Greys_r)
-    plt.figure(1, dpi=300)
-    plt.subplot(212)
-    plt.imshow(dilated_image, cmap=cm.Greys_r)
-    plt.show()
+#    plt.figure(1, dpi=300)
+#    plt.subplot(211)
+#    plt.imshow(img, cmap=cm.Greys_r)
+#    plt.figure(1, dpi=300)
+#    plt.subplot(212)
+#    plt.imshow(dilated_image, cmap=cm.Greys_r)
+#    plt.show()
 
     laplace_image = laplace(dilated_image, la)
 
@@ -132,6 +132,17 @@ if __name__ == "__main__":
     plt.figure(1, dpi=300)
     plt.subplot(212)
     plt.imshow(laplace_image, cmap=cm.Greys_r)
+    plt.show()
+
+    t = round(np.amax(laplace_image) / 2)
+    thresholde_image = threshold_operation(laplace_image, t)
+
+    plt.figure(1, dpi=300)
+    plt.subplot(211)
+    plt.imshow(img, cmap=cm.Greys_r)
+    plt.figure(1, dpi=300)
+    plt.subplot(212)
+    plt.imshow(thresholde_image, cmap=cm.Greys_r)
     plt.show()
 
 #    imgOut = median_filter(laplace_image, 3, 1)
