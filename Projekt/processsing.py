@@ -51,6 +51,40 @@ def laplace(in_image, filter_h):
             tmp.clear()
     return copy
 
+#threshold to set everything gray to black
+def threshold_operation(hough_array, threshold):
+    width, height = hough_array.shape
+    copy = hough_array.copy()
+    for v in range(height):
+        for u in range(width):
+            if hough_array[u][v] < threshold:
+                copy[u][v] = 0
+    return copy
+
+
+#def median_filter(in_image, filter_size, offset):
+#    if offset == 0:
+#        offset = 1
+#    copy = np.copy(in_image)
+#    m, n = copy.shape
+#    if n > m:
+#        m, n = n, m
+#    copy = np.resize(copy, (round(m / offset), round(n / offset)))
+#
+#    p = np.ndarray(filter_size ** 2, dtype=int)
+#
+#    for v in range(1, m - filter_size - 1, offset):
+#        for u in range(1, n - filter_size - 1, offset):
+#            k = 0
+#            for j in range(-floor(filter_size / 2), floor(filter_size / 2) + 1):
+#                for i in range(-floor(filter_size / 2), floor(filter_size / 2) + 1):
+#                    p[k] = in_image[u + i][v + j]
+#                    k += 1
+#            p = np.sort(p, kind='heapsort')
+#
+#            copy[floor(u / offset)][floor(v / offset)] = p[floor(len(p) / 2)]
+#    return copy
+
 if __name__ == "__main__":
 
     now = datetime.datetime.now()
@@ -99,6 +133,16 @@ if __name__ == "__main__":
     plt.subplot(212)
     plt.imshow(laplace_image, cmap=cm.Greys_r)
     plt.show()
+
+#    imgOut = median_filter(laplace_image, 3, 1)
+#
+#    plt.figure(1, dpi=300)
+#    plt.subplot(211)
+#    plt.imshow(img, cmap=cm.Greys_r)
+#    plt.figure(1, dpi=300)
+#    plt.subplot(212)
+#    plt.imshow(imgOut, cmap=cm.Greys_r)
+#    plt.show()
 
     now = datetime.datetime.now()
     print(now.strftime("%Y-%m-%d %H:%M:%S"))
