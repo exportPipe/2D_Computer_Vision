@@ -5,10 +5,10 @@ import matplotlib.cm as cm
 
 
 def get_binary(in_image, threshold):
-    return 1 * (in_image < threshold)
+    return 1 * (in_image > threshold)
 
 
-def get_regions(in_image):
+def get_regions(in_image, region_size):
     # PASS 1
     label = 2
     collisions = list()
@@ -22,15 +22,17 @@ def get_regions(in_image):
         for u in range(1, width - 1):
             if copy[u][v] == 1:
                 # current neighbors
-                for j in range(-1, 2):
-                    for i in range(-1, 2):
-                        if not (i == 0 and j == 0):
-                            neighbors.append(copy[u + i][v + j])
+                if region_size == 4:
+                    neighbors.append(copy[u][v - 1])
+                    neighbors.append(copy[u - 1][v])
+                elif region_size == 8:
+                    neighbors.append(copy[u][v - 1])
+                    neighbors.append(copy[u - 1][v])
+                    neighbors.append(copy[u - 1][v - 1])
+                    neighbors.append(copy[u + 1][v - 1])
 
                 # all neighbors are background ( = 0)
-                # TODO: geht hier nie rein, wieso auch, warum sollten alle Nachbarn Hintergrund sein??
                 if sum(neighbors) == 0:
-                    print(f'seperated region at {u}-{v}')
                     copy[u][v] = label
                     label += 1
                     neighbors.clear()
@@ -50,29 +52,21 @@ def get_regions(in_image):
                     if count > 0 and i > 1:
                         several_labeled = True
                         one_labeled = False
-                        break
                     count += 1
                 count = 0
 
                 if one_labeled:
-                    print('one labeled')
-                    in_image[u][v] = neighbors[0]
+                    copy[u][v] = neighbors[0]
                     neighbors.clear()
                     continue
                 elif several_labeled:
-                    print('two labeled')
-                    in_image[u][v] = neighbors[0]
+                    copy[u][v] = neighbors[0]
                     for neighbor in neighbors:
                         if neighbor != neighbors[0] and neighbor > 1:
-                            collisions.append((neighbors[count], neighbors[0]))
-                        print(collisions)
+                            collisions.append((neighbor, neighbors[0]))
                 neighbors.clear()
 
-    # test purpose only
-    label = 5
-    collisions = [(2, 3), (2, 4), (3, 4)]
-
-    # PASS 2
+    # PASS 2 -----------------------
     # list of all labels > 1
     labels = list()
     for i in range(2, label):
@@ -83,26 +77,38 @@ def get_regions(in_image):
     for i in labels:
         labels_R.append({i})
 
-    res = set
+    res = set()
+    # Liste an Collisions (collisions)
+    print(f'Kollisionen:    {collisions}')
+    print(f'Label Sets      {labels_R}')
+    r_a = 0
+    r_b = 0
     for collision in collisions:
-        for label in labels_R:
-            res = res.union(set(collision).union(label))
+        for idx, entry in enumerate(labels_R):
+            if collision[0] in entry:
+                r_a = idx
+            elif collision[1] in entry:
+                r_b = idx
+        if r_a != r_b:
+            labels_R[r_a] = labels_R[r_a].union(labels_R[r_b])
+            labels_R[r_b].clear()
 
-    print(res)
+    print(labels_R)
 
-    # PASS 3
+    # PASS 3 ----------------------
     for v in range(height):
         for u in range(width):
-            if copy[u][v]:
-                # find min key and replace
-                pass
+            if copy[u][v] > 1:
+                for entry in labels_R:
+                    if copy[u][v] in entry:
+                        copy[u][v] = min(entry)
 
     return copy
 
 
 if __name__ == "__main__":
     # read img
-    img = io.imread("images/regionen1.png")
+    img = io.imread("images/regionen2.png")
     # convert to numpy array
     img = np.array(img).astype(np.int16)
 
@@ -110,7 +116,7 @@ if __name__ == "__main__":
     binary_img = get_binary(img, 150)
 
     # get regions
-    regions = get_regions(binary_img)
+    regions = get_regions(binary_img, 4)
     plt.figure(1, dpi=300)
     plt.subplot(211)
     plt.imshow(img, cmap=cm.Greys_r)
@@ -124,7 +130,7 @@ if __name__ == "__main__":
     plt.imshow(img, cmap=cm.Greys_r)
     plt.figure(1, dpi=300)
     plt.subplot(212)
-    plt.imshow(regions, cmap=cm.Greys_r)
+    plt.imshow(regions)
     plt.show()
 
     exit(0)
