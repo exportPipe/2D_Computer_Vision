@@ -222,7 +222,7 @@ if __name__ == "__main__":
 
     plt.figure(1, dpi=300)
     plt.subplot(211)
-    plt.imshow(img, cmap=cm.Greys_r)
+    plt.imshow(dilated_image, cmap=cm.Greys_r)
     plt.figure(1, dpi=300)
     plt.subplot(212)
     plt.imshow(regions)
