@@ -1,5 +1,6 @@
 from math import floor
 
+
 import skimage.transform
 from skimage import io
 import numpy as np
@@ -8,18 +9,17 @@ import matplotlib.cm as cm
 import datetime
 
 
-def rgb2gray(rgb):
+def rgb2gray(rgb: np.ndarray) -> np.ndarray:
     r, g, b = rgb[:, :, 0], rgb[:, :, 1], rgb[:, :, 2]
     gray = 0.2989 * r + 0.5870 * g + 0.1140 * b
-
     return gray
 
 
-def get_binary(in_image, threshold):
+def get_binary(in_image: np.ndarray, threshold) -> np.ndarray:
     return 1 * (in_image > threshold)
 
 
-def dilate(in_image, filter_h):
+def dilate(in_image: np.ndarray, filter_h) -> np.ndarray:
     width, height = in_image.shape
     copy = in_image.copy()
 
@@ -39,7 +39,7 @@ def dilate(in_image, filter_h):
     return copy
 
 
-def erode(in_image, filter_h):
+def erode(in_image: np.ndarray, filter_h) -> np.ndarray:
     width, height = in_image.shape
     copy = in_image.copy()
 
@@ -59,7 +59,7 @@ def erode(in_image, filter_h):
     return copy
 
 
-def laplace(in_image, filter_h):
+def laplace(in_image: np.ndarray, filter_h) -> np.ndarray:
     width, height = in_image.shape
     copy = in_image.copy()
 
@@ -79,7 +79,7 @@ def laplace(in_image, filter_h):
     return copy
 
 
-def median_filter(in_image, filter_size, offset):
+def median_filter(in_image: np.ndarray, filter_size, offset) -> np.ndarray:
     if offset == 0:
         offset = 1
     copy = np.copy(in_image)
@@ -104,22 +104,11 @@ def median_filter(in_image, filter_size, offset):
 
 
 if __name__ == "__main__":
-    now = datetime.datetime.now()
-    print(now.strftime("%Y-%m-%d %H:%M:%S"))
     # read img
-    # img = io.imread("images/buchstaben.jpg")
-    # img = io.imread("images/buchstaben1.jpg")
     img = io.imread("images/Buchstaben1.jpg")
     # img_resized = skimage.transform.resize(img, (400, 400))
-    # img = io.imread("images/lena.jpg")
-    # convert to numpy array
     img = np.array(img).astype(np.int16)
 
-    h1 = np.array([[0, 0, 0, 0, 0],
-                   [0, 1, 1, 1, 0],
-                   [0, 1, 1, 1, 0],
-                   [0, 1, 1, 1, 0],
-                   [0, 0, 0, 0, 0]])
     h2 = np.array([[0, 0, 0],
                    [0, 1, 1],
                    [0, 0, 0]])
@@ -127,74 +116,17 @@ if __name__ == "__main__":
                    [1, -8, 1],
                    [0, 1, 0]])
 
-    imggray = rgb2gray(img)
+    img_gray = rgb2gray(img)
+    img_binary = get_binary(img_gray, 128)
 
-    # plt.figure(1, dpi=300)
-    # plt.imshow(imgbin, cmap=cm.Greys_r)
-    # plt.show()
-
-    dilated_image = dilate(imggray, h2)
-
-    eroded_image = erode(dilated_image, h2)
-
-    # dilated_image2 = dilate(eroded_image, h2)
-    #
-    # eroded_image2 = erode(dilated_image2, h2)
-    #
-    # dilated_image3 = dilate(eroded_image2, h2)
-    #
-    # eroded_image3 = erode(dilated_image3, h2)
-    #
-    # dilated_image4 = dilate(eroded_image3, h2)
-    #
-    # eroded_image4 = erode(dilated_image4, h2)
-    #
-    # dilated_image5 = dilate(eroded_image4, h2)
-    #
-    # eroded_image5 = erode(dilated_image5, h2)
-
-    imgbine = get_binary(eroded_image, 150)
+    dilated_image = dilate(img_binary, h2)
 
     plt.figure(1, dpi=300)
     plt.subplot(211)
     plt.imshow(img, cmap=cm.Greys_r)
     plt.figure(1, dpi=300)
     plt.subplot(212)
-    plt.imshow(imgbine, cmap=cm.Greys_r)
+    plt.imshow(dilated_image, cmap=cm.Greys_r)
     plt.show()
-
-    # laplace_image = laplace(dilated_image, la)
-    #
-    # plt.figure(1, dpi=300)
-    # plt.subplot(211)
-    # plt.imshow(dilated_image, cmap=cm.Greys_r)
-    # plt.figure(1, dpi=300)
-    # plt.subplot(212)
-    # plt.imshow(laplace_image, cmap=cm.Greys_r)
-    # plt.show()
-
-    # t = round(np.amax(laplace_image) / 2)
-    # thresholde_image = threshold_operation(laplace_image, t)
-    #
-    # plt.figure(1, dpi=300)
-    # plt.subplot(211)
-    # plt.imshow(laplace_image, cmap=cm.Greys_r)
-    # plt.figure(1, dpi=300)
-    # plt.subplot(212)
-    # plt.imshow(thresholde_image, cmap=cm.Greys_r)
-    # plt.show()
-
-    # imgOut = median_filter(imggray, 3, 1)
-
-    # plt.figure(1, dpi=300)
-    # plt.subplot(211)
-    # plt.imshow(thresholde_image, cmap=cm.Greys_r)
-    # plt.figure(1, dpi=300)
-    # plt.subplot(212)
-    # plt.imshow(imgOut, cmap=cm.Greys_r)
-    # plt.show()
-
-    now = datetime.datetime.now()
-    print(now.strftime("%Y-%m-%d %H:%M:%S"))
 
     exit(0)
