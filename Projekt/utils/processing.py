@@ -151,6 +151,7 @@ def get_text(grid):
 
     for idx, region in enumerate(rois):
         plt.figure(1, dpi=300)
+        rois[idx] = np.pad(rois[idx], pad_width=5)
         rois[idx] = resize(rois[idx], (28, 28))
         plt.imshow(rois[idx], cmap=cm.Greys)
         plt.show()
