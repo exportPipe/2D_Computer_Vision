@@ -1,7 +1,6 @@
-from .settings import *
 import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.cm as cm
+from matplotlib import pyplot as plt, cm
+from skimage.transform import resize
 
 
 def rgb2gray(rgb: np.ndarray) -> np.ndarray:
@@ -152,9 +151,9 @@ def get_text(grid):
 
     for idx, region in enumerate(rois):
         plt.figure(1, dpi=300)
+        rois[idx] = resize(rois[idx], (28, 28))
         plt.imshow(rois[idx], cmap=cm.Greys)
         plt.show()
-
 
     return f'{len(rois)}'
 
@@ -167,4 +166,3 @@ def get_text(grid):
     # plt.subplot(212)
     # plt.imshow(image, cmap=cm.Greys_r)
     # plt.show()
-
