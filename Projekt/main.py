@@ -1,3 +1,6 @@
+import ctypes
+import tkinter.filedialog
+
 from utils import *
 
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
