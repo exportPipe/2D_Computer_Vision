@@ -52,6 +52,15 @@ def draw_pixel(row_, col_, size):
             grid[u][v] = drawing_color
 
 
+def prompt_file():
+    ctypes.windll.shcore.SetProcessDpiAwareness(1)
+    top = tkinter.Tk()
+    top.withdraw()
+    file_name = tkinter.filedialog.askopenfilename(parent=top)
+    top.destroy()
+    return file_name
+
+
 run = True
 clock = pygame.time.Clock()
 grid = init_grid(ROWS, COLS, WHITE)
@@ -88,6 +97,8 @@ while run:
                         grid = init_grid(ROWS, COLS, BG_COLOR)
                     if button.text == "Spot":
                         buttons[idx + 1].text = get_text(grid)
+                    if button.text == "Open...":
+                        print(prompt_file())
 
     draw(win=WIN, grid_=grid, buttons_=buttons)
 

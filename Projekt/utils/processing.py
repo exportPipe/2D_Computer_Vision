@@ -149,12 +149,12 @@ def get_text(grid):
     plt.subplot(212)
     plt.imshow(regions)
     plt.show()
-    print(1)
 
     for idx, region in enumerate(rois):
         plt.figure(1, dpi=300)
         plt.imshow(rois[idx], cmap=cm.Greys)
         plt.show()
+
 
     return f'{len(rois)}'
 
