@@ -235,6 +235,17 @@ if __name__ == "__main__":
         else:
             unique_regions.append(separate_region(regions, region_idx))
 
+    rois = []
+    for region in unique_regions:
+        region_indexes = np.where(region == np.amax(region))
+        row_min = np.amin(region_indexes[0])
+        row_max = np.amax(region_indexes[0])
+        col_min = np.amin(region_indexes[1])
+        col_max = np.amax(region_indexes[1])
+        roi = region[row_min:row_max, col_min:col_max]
+        rois.append(roi)
+        print('pass')
+
     plt.figure(1, dpi=300)
     plt.subplot(211)
     plt.imshow(img_binary, cmap=cm.Greys_r)
@@ -243,9 +254,9 @@ if __name__ == "__main__":
     plt.imshow(regions)
     plt.show()
 
-    for idx, region in enumerate(unique_regions):
+    for idx, region in enumerate(rois):
         plt.figure(1, dpi=300)
-        plt.imshow(unique_regions[idx], cmap=cm.Greys)
+        plt.imshow(rois[idx], cmap=cm.Greys)
         plt.show()
 
     now = datetime.datetime.now()
