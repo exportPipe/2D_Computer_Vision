@@ -223,7 +223,6 @@ if __name__ == "__main__":
     img_binary = get_binary(img_gray, 128)
 
     now = datetime.datetime.now()
-    print(now.strftime("%Y-%m-%d %H:%M:%S"))
 
     # dilated_image = dilate(img_binary, h2)
     regions = get_regions(img_binary, 8)
@@ -244,23 +243,11 @@ if __name__ == "__main__":
     plt.imshow(regions)
     plt.show()
 
-    plt.figure(1, dpi=300)
-    plt.subplot(211)
-    plt.imshow(unique_regions[0], cmap=cm.Greys)
-    plt.figure(1, dpi=300)
-    plt.subplot(212)
-    plt.imshow(unique_regions[1], cmap=cm.Greys)
-    plt.show()
-
-    plt.figure(1, dpi=300)
-    plt.subplot(211)
-    plt.imshow(unique_regions[2], cmap=cm.Greys)
-    plt.figure(1, dpi=300)
-    plt.subplot(212)
-    plt.imshow(unique_regions[3], cmap=cm.Greys)
-    plt.show()
+    for idx, region in enumerate(unique_regions):
+        plt.figure(1, dpi=300)
+        plt.imshow(unique_regions[idx], cmap=cm.Greys)
+        plt.show()
 
     now = datetime.datetime.now()
-    print(now.strftime("%Y-%m-%d %H:%M:%S"))
 
     exit(0)
