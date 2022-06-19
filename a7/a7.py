@@ -116,7 +116,8 @@ if __name__ == "__main__":
     binary_img = get_binary(img, 150)
 
     # get regions
-    regions = get_regions(binary_img)
+    regions = get_regions(binary_img, 8)
+
     plt.figure(1, dpi=300)
     plt.subplot(211)
     plt.imshow(img, cmap=cm.Greys_r)
@@ -130,7 +131,7 @@ if __name__ == "__main__":
     plt.imshow(img, cmap=cm.Greys_r)
     plt.figure(1, dpi=300)
     plt.subplot(212)
-    plt.imshow(regions, cmap=cm.Greys_r)
+    plt.imshow(regions)
     plt.show()
 
     exit(0)

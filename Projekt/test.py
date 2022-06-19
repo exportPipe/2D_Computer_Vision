@@ -16,7 +16,7 @@ def rgb2gray(rgb: np.ndarray) -> np.ndarray:
 
 
 def get_binary(in_image: np.ndarray, threshold) -> np.ndarray:
-    return 1 * (in_image > threshold)
+    return 1 * (in_image < threshold)
 
 
 def dilate(in_image: np.ndarray, filter_h) -> np.ndarray:
@@ -168,42 +168,48 @@ def get_regions(in_image: np.ndarray, region_size) -> np.ndarray:
         labels.append(i)
 
     # list of lists of all labels > 1
-    labels_R = list()
+    labels_r = list()
     for i in labels:
-        labels_R.append({i})
+        labels_r.append({i})
 
-    res = set()
-    # Liste an Collisions (collisions)
-    print(f'Kollisionen:    {collisions}')
-    print(f'Label Sets      {labels_R}')
     r_a = 0
     r_b = 0
     for collision in collisions:
-        for idx, entry in enumerate(labels_R):
+        for idx, entry in enumerate(labels_r):
             if collision[0] in entry:
                 r_a = idx
             elif collision[1] in entry:
                 r_b = idx
         if r_a != r_b:
-            labels_R[r_a] = labels_R[r_a].union(labels_R[r_b])
-            labels_R[r_b].clear()
-
-    print(labels_R)
+            labels_r[r_a] = labels_r[r_a].union(labels_r[r_b])
+            labels_r[r_b].clear()
 
     # PASS 3 ----------------------
     for v in range(height):
         for u in range(width):
             if copy[u][v] > 1:
-                for entry in labels_R:
+                for entry in labels_r:
                     if copy[u][v] in entry:
                         copy[u][v] = min(entry)
 
     return copy
 
 
+def separate_region(in_image: np.ndarray, region: int) -> np.ndarray:
+    width, height = in_image.shape
+    copy = in_image.copy()
+    for v in range(0, width):
+        for u in range(0, height):
+            if copy[u][v] != region:
+                copy[u][v] = 0
+            else:
+                copy[u][v] = 1
+    return copy
+
+
 if __name__ == "__main__":
     # read img
-    img = io.imread("images/Buchstaben1.jpg")
+    img = io.imread("images/bxfz.png")
     # img_resized = skimage.transform.resize(img, (400, 400))
     img = np.array(img).astype(np.int16)
 
@@ -217,15 +223,45 @@ if __name__ == "__main__":
     img_gray = rgb2gray(img)
     img_binary = get_binary(img_gray, 128)
 
-    dilated_image = dilate(img_binary, h2)
-    regions = get_regions(dilated_image, 4)
+    now = datetime.datetime.now()
+    print(now.strftime("%Y-%m-%d %H:%M:%S"))
+
+    # dilated_image = dilate(img_binary, h2)
+    regions = get_regions(img_binary, 8)
+    unique_region_indexes = np.unique(regions)
+    unique_regions = []
+
+    for region_idx in unique_region_indexes:
+        if region_idx == 0:
+            continue
+        else:
+            unique_regions.append(separate_region(regions, region_idx))
 
     plt.figure(1, dpi=300)
     plt.subplot(211)
-    plt.imshow(dilated_image, cmap=cm.Greys_r)
+    plt.imshow(img_binary, cmap=cm.Greys_r)
     plt.figure(1, dpi=300)
     plt.subplot(212)
     plt.imshow(regions)
     plt.show()
+
+    plt.figure(1, dpi=300)
+    plt.subplot(211)
+    plt.imshow(unique_regions[0], cmap=cm.Greys)
+    plt.figure(1, dpi=300)
+    plt.subplot(212)
+    plt.imshow(unique_regions[1], cmap=cm.Greys)
+    plt.show()
+
+    plt.figure(1, dpi=300)
+    plt.subplot(211)
+    plt.imshow(unique_regions[2], cmap=cm.Greys)
+    plt.figure(1, dpi=300)
+    plt.subplot(212)
+    plt.imshow(unique_regions[3], cmap=cm.Greys)
+    plt.show()
+
+    now = datetime.datetime.now()
+    print(now.strftime("%Y-%m-%d %H:%M:%S"))
 
     exit(0)
