@@ -3,7 +3,7 @@ from matplotlib import pyplot as plt, cm
 from skimage.transform import resize
 import tensorflow as tf
 
-model = tf.keras.models.load_model("cnna5")
+model = tf.keras.models.load_model("cnnModel")
 model.trainable = False
 
 
@@ -163,6 +163,7 @@ def get_text(grid):
     guess = ''
     for roi in rois:
         guess += str(np.argmax(model.predict(roi), axis=1))
+        print(type(roi))
     return guess
 
     # plt.figure(1, dpi=300)
