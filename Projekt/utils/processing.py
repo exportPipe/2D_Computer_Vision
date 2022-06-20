@@ -1,6 +1,10 @@
 import numpy as np
 from matplotlib import pyplot as plt, cm
 from skimage.transform import resize
+import tensorflow as tf
+
+model = tf.keras.models.load_model("cnna5")
+model.trainable = False
 
 
 def rgb2gray(rgb: np.ndarray) -> np.ndarray:
@@ -156,9 +160,10 @@ def get_text(grid):
         plt.imshow(rois[idx], cmap=cm.Greys)
         plt.show()
 
-    return f'{len(rois)}'
-
-    # TODO; Niklas CNN
+    guess = ''
+    for roi in rois:
+        guess += str(np.argmax(model.predict(roi), axis=1))
+    return guess
 
     # plt.figure(1, dpi=300)
     # plt.subplot(211)
