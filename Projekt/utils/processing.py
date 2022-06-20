@@ -2,6 +2,7 @@ import numpy as np
 from matplotlib import pyplot as plt, cm
 from skimage.transform import resize
 import tensorflow as tf
+import skimage as skm
 
 model = tf.keras.models.load_model("cnnModel")
 model.trainable = False
@@ -120,8 +121,11 @@ def separate_region(in_image: np.ndarray, region: int) -> np.ndarray:
     return copy
 
 
-def get_text(grid):
-    image = np.array(grid)
+def get_text(grid, is_file=False):
+    if is_file:
+        image = skm.io.imread(grid)
+    else:
+        image = np.array(grid)
     image = rgb2gray(image)
     image = get_binary(image, 128)
 
@@ -145,31 +149,19 @@ def get_text(grid):
         roi = region[row_min:row_max, col_min:col_max]
         rois.append(roi)
 
-    plt.figure(1, dpi=300)
-    plt.subplot(211)
-    plt.imshow(image, cmap=cm.Greys_r)
-    plt.figure(1, dpi=300)
-    plt.subplot(212)
-    plt.imshow(regions)
-    plt.show()
-
     for idx, region in enumerate(rois):
         plt.figure(1, dpi=300)
         rois[idx] = np.pad(rois[idx], pad_width=2)
         rois[idx] = resize(rois[idx], (28, 28))
-        plt.imshow(rois[idx], cmap=cm.Greys)
-        plt.show()
+        rois[idx] = ((rois[idx] - rois[idx].min()) * (1/(rois[idx].max() - rois[idx].min()) * 255)).astype('uint8')
+        # plt.imshow(rois[idx], cmap=cm.Greys)
+        # plt.show()
 
     guess = ''
     for roi in rois:
-        guess += str(np.argmax(model.predict(roi), axis=1))
-        print(type(roi))
+        roi = tf.reshape(roi, shape=[-1, 28, 28, 1])
+        prediction = np.argmax(model.predict(roi), axis=1)
+        for i in range(len(prediction)):
+            guess += chr(prediction[i] + 96)
     return guess
 
-    # plt.figure(1, dpi=300)
-    # plt.subplot(211)
-    # plt.imshow(image, cmap=cm.Greys_r)
-    # plt.figure(1, dpi=300)
-    # plt.subplot(212)
-    # plt.imshow(image, cmap=cm.Greys_r)
-    # plt.show()

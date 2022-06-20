@@ -101,7 +101,7 @@ while run:
                     if button.text == "Spot":
                         buttons[idx + 1].text = get_text(grid)
                     if button.text == "Open...":
-                        print(prompt_file())
+                        buttons[idx - 1].text = get_text(prompt_file(), True)
 
     draw(win=WIN, grid_=grid, buttons_=buttons)
 
