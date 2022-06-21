@@ -3,7 +3,10 @@ from matplotlib import pyplot as plt, cm
 from skimage.transform import resize
 import tensorflow as tf
 import skimage as skm
+import pytesseract
+from PIL import Image
 
+pytesseract.pytesseract.tesseract_cmd = 'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'
 model = tf.keras.models.load_model("cnnModel")
 model.trainable = False
 
@@ -112,8 +115,8 @@ def get_regions(in_image: np.ndarray, region_size) -> np.ndarray:
 def separate_region(in_image: np.ndarray, region: int) -> np.ndarray:
     width, height = in_image.shape
     copy = in_image.copy()
-    for v in range(0, width):
-        for u in range(0, height):
+    for v in range(0, height):
+        for u in range(0, width):
             if copy[u][v] != region:
                 copy[u][v] = 0
             else:
@@ -121,13 +124,25 @@ def separate_region(in_image: np.ndarray, region: int) -> np.ndarray:
     return copy
 
 
-def get_text(grid, is_file=False):
+def get_char_with_pytesseract(image: np.ndarray):
+    return pytesseract.image_to_string(image)
+
+
+def get_text(grid, is_file=False, use_tesseract=False):
     if is_file:
         image = skm.io.imread(grid)
     else:
         image = np.array(grid)
-    image = rgb2gray(image)
-    image = get_binary(image, 128)
+    imageGrey = rgb2gray(image)
+    if use_tesseract:
+        img = Image.fromarray(imageGrey)
+        guess = pytesseract.image_to_string(img.convert("L"), lang='eng',
+                                            config='-c tessedit_char_whitelist'
+                                                   '=ABCDEFGHIJKLMNOPQRSTUVWabcdefghijklmnopqrstuvwxyz')
+        guess = guess.replace("\n", "")
+        return guess
+
+    image = get_binary(imageGrey, 128)
 
     regions = get_regions(image, 8)
     unique_region_indexes = np.unique(regions)
@@ -151,16 +166,16 @@ def get_text(grid, is_file=False):
 
     for idx, region in enumerate(rois):
         plt.figure(1, dpi=300)
-        rois[idx] = np.pad(rois[idx], pad_width=2)
+        rois[idx] = np.pad(rois[idx], pad_width=10)
         rois[idx] = resize(rois[idx], (28, 28))
-        rois[idx] = ((rois[idx] - rois[idx].min()) * (1/(rois[idx].max() - rois[idx].min()) * 255)).astype('uint8')
-        # plt.imshow(rois[idx], cmap=cm.Greys)
-        # plt.show()
+        rois[idx] = ((rois[idx] - rois[idx].min()) * (1 / (rois[idx].max() - rois[idx].min()) * 255)).astype('uint8')
 
     guess = ''
+
     for roi in rois:
-        roi = tf.reshape(roi, shape=[-1, 28, 28, 1])
-        prediction = np.argmax(model.predict(roi), axis=1)
+        roi = np.reshape(roi, (-1, 28, 28, 1))
+        pred = model.predict([roi])
+        prediction = np.argmax(model.predict([roi]), axis=1)
         for i in range(len(prediction)):
             guess += chr(prediction[i] + 96)
     return guess

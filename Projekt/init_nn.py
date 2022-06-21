@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Convolution2D, Flatten, Dropout, BatchNormalization
 import tensorflow.keras as keras
 from extra_keras_datasets import emnist
 
@@ -20,13 +22,13 @@ def trainCnn():
     valIdx = int(len(y_train))
     trainIdx = int(valIdx * 0.8)
 
-    X_train = x_train[0:trainIdx] / 255  # divide by 255 so that they are in range 0 to 1
+    X_train = x_train[0:trainIdx]  # divide by 255 so that they are in range 0 to 1
     Y_train = keras.utils.to_categorical(y_train[0:trainIdx])  # one-hot encoding
 
-    X_val = x_train[trainIdx:valIdx] / 255
+    X_val = x_train[trainIdx:valIdx]
     Y_val = keras.utils.to_categorical(y_train[trainIdx:valIdx])
 
-    X_test = x_test / 255
+    X_test = x_test
     Y_test = keras.utils.to_categorical(y_test)
 
     # plot first few elements of modified emnist (just hex)
@@ -40,16 +42,28 @@ def trainCnn():
     X_train = np.reshape(X_train, (X_train.shape[0], 28, 28, 1))
     X_val = np.reshape(X_val, (X_val.shape[0], 28, 28, 1))
 
-    model = tf.keras.Sequential([
-        tf.keras.layers.Conv2D(32, 3, input_shape=(28, 28, 1), activation='relu'),
-        tf.keras.layers.AveragePooling2D(2, 2),
-        tf.keras.layers.Flatten(input_shape=(28, 28, 1)),
-        tf.keras.layers.Dense(512, activation='elu'),
-        tf.keras.layers.Dropout(.1),
-        tf.keras.layers.Dense(128, activation='elu'),
-        tf.keras.layers.Dropout(.1),
-        tf.keras.layers.Dense(27, activation='softmax')
-    ])
+    model = Sequential()
+    model.add(Convolution2D(32, kernel_size=3, activation='relu', input_shape=(28, 28, 1)))
+    model.add(BatchNormalization())
+    model.add(Convolution2D(32, kernel_size=3, activation='relu'))
+    model.add(BatchNormalization())
+    model.add(Convolution2D(32, kernel_size=5, strides=2, padding='same', activation='relu'))
+    model.add(BatchNormalization())
+    model.add(Dropout(0.25))
+
+    model.add(Convolution2D(64, kernel_size=3, activation='relu'))
+    model.add(BatchNormalization())
+    model.add(Convolution2D(64, kernel_size=3, activation='relu'))
+    model.add(BatchNormalization())
+    model.add(Convolution2D(64, kernel_size=5, strides=2, padding='same', activation='relu'))
+    model.add(BatchNormalization())
+    model.add(Dropout(0.3))
+
+    model.add(Convolution2D(128, kernel_size=4, activation='relu'))
+    model.add(BatchNormalization())
+    model.add(Flatten())
+    model.add(Dropout(0.3))
+    model.add(Dense(27, activation='softmax'))
 
     model.compile(loss=keras.losses.categorical_crossentropy, optimizer='adam',
                   metrics=['accuracy'])
