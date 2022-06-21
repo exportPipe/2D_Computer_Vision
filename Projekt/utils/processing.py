@@ -6,6 +6,7 @@ import skimage as skm
 
 model = tf.keras.models.load_model("cnnModel")
 model.trainable = False
+filter_a = np.array([[0, 0, 0], [0, 1, 1], [0, 0, 0]])
 
 
 def rgb2gray(rgb: np.ndarray) -> np.ndarray:
@@ -112,8 +113,8 @@ def get_regions(in_image: np.ndarray, region_size) -> np.ndarray:
 def separate_region(in_image: np.ndarray, region: int) -> np.ndarray:
     width, height = in_image.shape
     copy = in_image.copy()
-    for v in range(0, width):
-        for u in range(0, height):
+    for v in range(0, height):
+        for u in range(0, width):
             if copy[u][v] != region:
                 copy[u][v] = 0
             else:
@@ -151,7 +152,7 @@ def get_text(grid, is_file=False):
 
     for idx, region in enumerate(rois):
         plt.figure(1, dpi=300)
-        rois[idx] = np.pad(rois[idx], pad_width=5)
+        rois[idx] = np.pad(rois[idx], pad_width=6)
         rois[idx] = resize(rois[idx], (28, 28))
         rois[idx] = ((rois[idx] - rois[idx].min()) * (1/(rois[idx].max() - rois[idx].min()) * 255)).astype('uint8')
         plt.imshow(rois[idx], cmap=cm.Greys)
@@ -160,6 +161,8 @@ def get_text(grid, is_file=False):
     guess = ''
     for roi in rois:
         roi = tf.reshape(roi, shape=[-1, 28, 28, 1])
+        pred = model.predict(roi)
+        print(pred)
         prediction = np.argmax(model.predict(roi), axis=1)
         guess += chr(prediction[0] + 96)
     return guess
