@@ -154,8 +154,8 @@ def get_text(grid, is_file=False):
         rois[idx] = np.pad(rois[idx], pad_width=5)
         rois[idx] = resize(rois[idx], (28, 28))
         rois[idx] = ((rois[idx] - rois[idx].min()) * (1/(rois[idx].max() - rois[idx].min()) * 255)).astype('uint8')
-        plt.imshow(rois[idx], cmap=cm.Greys)
-        plt.show()
+        # plt.imshow(rois[idx], cmap=cm.Greys)
+        # plt.show()
 
     guess = ''
     for roi in rois:
