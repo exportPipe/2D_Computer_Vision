@@ -112,8 +112,8 @@ def get_regions(in_image: np.ndarray, region_size) -> np.ndarray:
 def separate_region(in_image: np.ndarray, region: int) -> np.ndarray:
     width, height = in_image.shape
     copy = in_image.copy()
-    for v in range(0, width):
-        for u in range(0, height):
+    for v in range(0, height):
+        for u in range(0, width):
             if copy[u][v] != region:
                 copy[u][v] = 0
             else:
@@ -126,8 +126,8 @@ def get_text(grid, is_file=False):
         image = skm.io.imread(grid)
     else:
         image = np.array(grid)
-    image = rgb2gray(image)
-    image = get_binary(image, 128)
+    image_gray = rgb2gray(image)
+    image = get_binary(image_gray, 1)
 
     regions = get_regions(image, 8)
     unique_region_indexes = np.unique(regions)
@@ -151,15 +151,14 @@ def get_text(grid, is_file=False):
 
     for idx, region in enumerate(rois):
         plt.figure(1, dpi=300)
-        rois[idx] = np.pad(rois[idx], pad_width=5)
+        rois[idx] = np.pad(rois[idx], pad_width=10)
         rois[idx] = resize(rois[idx], (28, 28))
-        rois[idx] = ((rois[idx] - rois[idx].min()) * (1/(rois[idx].max() - rois[idx].min()) * 255)).astype('uint8')
-        # plt.imshow(rois[idx], cmap=cm.Greys)
-        # plt.show()
+        rois[idx] = ((rois[idx] - rois[idx].min()) * (1 / (rois[idx].max() - rois[idx].min()) * 255)).astype('uint8')
 
     guess = ''
     for roi in rois:
-        roi = tf.reshape(roi, shape=[-1, 28, 28, 1])
-        prediction = np.argmax(model.predict(roi), axis=1)
-        guess += chr(prediction[0] + 96)
+        roi = np.reshape(roi, (-1, 28, 28, 1))
+        prediction = np.argmax(model.predict([roi]), axis=1)
+        for i in range(len(prediction)):
+            guess += chr(prediction[i] + 96)
     return guess
