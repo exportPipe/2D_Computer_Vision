@@ -5,7 +5,7 @@ import tensorflow.keras as keras
 from extra_keras_datasets import emnist
 
 
-def trainCnn():
+def train_cnn():
     (input_train, target_train), (input_test, target_test) = emnist.load_data(type='letters')
 
     in_sort_train = np.where(target_train)
@@ -70,7 +70,7 @@ def trainCnn():
     plt.ylabel('accuracy cnn')
     plt.xlabel('epoch')
     plt.legend(['train', 'valid'], loc='lower right')
-    plt.subplot(2, 2, (2))
+    plt.subplot(2, 2, 2)
     plt.plot(history.history['loss'], linestyle='-.')
     plt.plot(history.history['val_loss'])
     plt.ylabel('loss cnn')
@@ -80,4 +80,4 @@ def trainCnn():
 
 
 if __name__ == '__main__':
-    trainCnn()
+    train_cnn()

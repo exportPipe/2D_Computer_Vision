@@ -1,5 +1,3 @@
-import pygame.display
-
 from .button import Button
 from .processing import *
 from .settings import *

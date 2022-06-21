@@ -163,4 +163,3 @@ def get_text(grid, is_file=False):
         prediction = np.argmax(model.predict(roi), axis=1)
         guess += chr(prediction[0] + 96)
     return guess
-

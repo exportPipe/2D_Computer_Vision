@@ -56,7 +56,7 @@ def draw_pixel(row_, col_, size):
 
 
 def prompt_file():
-    ctypes.windll.shcore.SetProcessDpiAwareness(1)
+    # ctypes.windll.shcore.SetProcessDpiAwareness(1)
     top = tkinter.Tk()
     top.withdraw()
     file_name = tkinter.filedialog.askopenfilename(parent=top)
