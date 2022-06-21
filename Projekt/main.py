@@ -23,10 +23,10 @@ def draw_grid(win, grid_):
             pygame.draw.rect(win, pixel, (j * PIXEL_SIZE, i * PIXEL_SIZE, PIXEL_SIZE, PIXEL_SIZE))
 
     if DRAW_GRID_LINES:
-        for i in range(0, ROWS + 1, 28):
+        for i in range(0, ROWS + 1, 7):
             pygame.draw.line(win, BLACK, (0, i * PIXEL_SIZE), (WIDTH, i * PIXEL_SIZE))
 
-        for i in range(0, COLS + 1, 28):
+        for i in range(0, COLS + 1, 7):
             pygame.draw.line(win, BLACK, (i * PIXEL_SIZE, 0), (i * PIXEL_SIZE, HEIGHT - TOOLBAR_HEIGHT))
 
 
@@ -70,12 +70,17 @@ grid = init_grid(ROWS, COLS, WHITE)
 drawing_color = BLACK
 drawing_size = 2
 
-button_y = HEIGHT - TOOLBAR_HEIGHT / 2 - 25
+button_y_1 = HEIGHT - TOOLBAR_HEIGHT / 2 - 85
+button_y_2 = HEIGHT - TOOLBAR_HEIGHT / 2 - 25
+button_y_3 = HEIGHT - TOOLBAR_HEIGHT / 2 + 50
 buttons = [
-    Button(10, button_y, 100, 50, WHITE, "Clear", BLACK),
-    Button(120, button_y, 100, 50, WHITE, "Spot"),
-    Button(230, button_y, 200, 50, WHITE),
-    Button(10, button_y + 60, 100, 50, WHITE, "Open...", BLACK)
+    Button(10, button_y_1, 50, 50, BLACK),
+    Button(70, button_y_1, 50, 50, WHITE),
+    Button(130, button_y_1, 80, 50, WHITE, "Clear", BLACK),
+    Button(340, button_y_1, 100, 50, WHITE, "Spot", BLUE),
+    Button(10, button_y_2, 430, 50, WHITE),
+    Button(10, button_y_3, 80, 50, WHITE, "Open...", BLACK),
+    Button(340, button_y_3, 100, 50, WHITE, "Save", BLACK)
 ]
 
 
@@ -99,10 +104,22 @@ while run:
                     if button.text == "Clear":
                         grid = init_grid(ROWS, COLS, BG_COLOR)
                         buttons[idx + 2].text = ''
+                        drawing_color = BLACK
+                        break
                     if button.text == "Spot":
                         buttons[idx + 1].text = get_text(grid)
+                        break
                     if button.text == "Open...":
-                        buttons[idx - 1].text = get_text(prompt_file(), True)
+                        try:
+                            buttons[idx - 1].text = get_text(prompt_file(), True)
+                        except ValueError:
+                            break
+                        break
+                    if button.text == "Save":
+                        file = open('recognized.txt', 'w')
+                        file.write(buttons[idx - 2].text)
+                        file.close()
+                    drawing_color = button.color
 
     draw(win=WIN, grid_=grid, buttons_=buttons)
 

@@ -3,10 +3,7 @@ from matplotlib import pyplot as plt, cm
 from skimage.transform import resize
 import tensorflow as tf
 import skimage as skm
-import pytesseract
-from PIL import Image
 
-pytesseract.pytesseract.tesseract_cmd = 'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'
 model = tf.keras.models.load_model("cnnModel")
 model.trainable = False
 
@@ -124,25 +121,13 @@ def separate_region(in_image: np.ndarray, region: int) -> np.ndarray:
     return copy
 
 
-def get_char_with_pytesseract(image: np.ndarray):
-    return pytesseract.image_to_string(image)
-
-
-def get_text(grid, is_file=False, use_tesseract=False):
+def get_text(grid, is_file=False):
     if is_file:
         image = skm.io.imread(grid)
     else:
         image = np.array(grid)
-    imageGrey = rgb2gray(image)
-    if use_tesseract:
-        img = Image.fromarray(imageGrey)
-        guess = pytesseract.image_to_string(img.convert("L"), lang='eng',
-                                            config='-c tessedit_char_whitelist'
-                                                   '=ABCDEFGHIJKLMNOPQRSTUVWabcdefghijklmnopqrstuvwxyz')
-        guess = guess.replace("\n", "")
-        return guess
-
-    image = get_binary(imageGrey, 128)
+    image_gray = rgb2gray(image)
+    image = get_binary(image_gray, 1)
 
     regions = get_regions(image, 8)
     unique_region_indexes = np.unique(regions)
@@ -171,12 +156,9 @@ def get_text(grid, is_file=False, use_tesseract=False):
         rois[idx] = ((rois[idx] - rois[idx].min()) * (1 / (rois[idx].max() - rois[idx].min()) * 255)).astype('uint8')
 
     guess = ''
-
     for roi in rois:
         roi = np.reshape(roi, (-1, 28, 28, 1))
-        pred = model.predict([roi])
         prediction = np.argmax(model.predict([roi]), axis=1)
         for i in range(len(prediction)):
             guess += chr(prediction[i] + 96)
     return guess
-
