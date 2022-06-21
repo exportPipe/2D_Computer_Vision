@@ -113,7 +113,7 @@ while run:
                         try:
                             buttons[idx - 1].text = get_text(prompt_file(), True)
                         except ValueError:
-                            break
+                            print('invalid file')
                         break
                     if button.text == "Save":
                         file = open('recognized.txt', 'w')
