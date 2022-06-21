@@ -74,7 +74,7 @@ button_y = HEIGHT - TOOLBAR_HEIGHT / 2 - 25
 buttons = [
     Button(10, button_y, 100, 50, WHITE, "Clear", BLACK),
     Button(120, button_y, 100, 50, WHITE, "Spot"),
-    Button(230, button_y, 530, 50, WHITE),
+    Button(230, button_y, 200, 50, WHITE),
     Button(10, button_y + 60, 100, 50, WHITE, "Open...", BLACK)
 ]
 
@@ -98,6 +98,7 @@ while run:
                         continue
                     if button.text == "Clear":
                         grid = init_grid(ROWS, COLS, BG_COLOR)
+                        buttons[idx + 2].text = ''
                     if button.text == "Spot":
                         buttons[idx + 1].text = get_text(grid)
                     if button.text == "Open...":

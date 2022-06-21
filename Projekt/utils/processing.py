@@ -151,17 +151,16 @@ def get_text(grid, is_file=False):
 
     for idx, region in enumerate(rois):
         plt.figure(1, dpi=300)
-        rois[idx] = np.pad(rois[idx], pad_width=2)
+        rois[idx] = np.pad(rois[idx], pad_width=5)
         rois[idx] = resize(rois[idx], (28, 28))
         rois[idx] = ((rois[idx] - rois[idx].min()) * (1/(rois[idx].max() - rois[idx].min()) * 255)).astype('uint8')
-        # plt.imshow(rois[idx], cmap=cm.Greys)
-        # plt.show()
+        plt.imshow(rois[idx], cmap=cm.Greys)
+        plt.show()
 
     guess = ''
     for roi in rois:
         roi = tf.reshape(roi, shape=[-1, 28, 28, 1])
         prediction = np.argmax(model.predict(roi), axis=1)
-        for i in range(len(prediction)):
-            guess += chr(prediction[i] + 96)
+        guess += chr(prediction[0] + 96)
     return guess
 
