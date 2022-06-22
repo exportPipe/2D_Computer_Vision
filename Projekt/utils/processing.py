@@ -1,3 +1,5 @@
+from math import floor
+
 import numpy as np
 from matplotlib import pyplot as plt, cm
 from skimage.transform import resize
@@ -6,6 +8,10 @@ import skimage as skm
 
 model = tf.keras.models.load_model("cnnModel")
 model.trainable = False
+
+ha = np.array([[0, 0, 0],
+               [0, 1, 1],
+               [0, 0, 0]])
 
 
 def rgb2gray(rgb: np.ndarray) -> np.ndarray:
@@ -121,13 +127,79 @@ def separate_region(in_image: np.ndarray, region: int) -> np.ndarray:
     return copy
 
 
+def dilate(in_image, filter_h):
+    width, height = in_image.shape
+    copy = in_image.copy()
+
+    k = floor(len(filter_h) / 2)
+    tmp = []
+    for v in range(k, height - k):
+        for u in range(k, width - k):
+            for j in range(-k, k + 1):
+                for i in range(-k, k + 1):
+                    tmp.append(in_image[u + i][v + j] + filter_h[i + k][j + k])
+            copy[u][v] = max(tmp)
+            if copy[u][v] > 255:
+                copy[u][v] = 255
+            if copy[u][v] < 0:
+                copy[u][v] = 0
+            tmp.clear()
+    return copy
+
+
+def erode(in_image, filter_h):
+    width, height = in_image.shape
+    copy = in_image.copy()
+
+    k = floor(len(filter_h) / 2)
+    tmp = []
+    for v in range(k, height - k):
+        for u in range(k, width - k):
+            for j in range(-k, k + 1):
+                for i in range(-k, k + 1):
+                    tmp.append(in_image[u + i][v + j] - filter_h[i + k][j + k])
+            copy[u][v] = min(tmp)
+            if copy[u][v] > 255:
+                copy[u][v] = 255
+            if copy[u][v] < 0:
+                copy[u][v] = 0
+            tmp.clear()
+    return copy
+
+
+def median_filter(in_image, filter_size):
+    copy = np.copy(in_image)
+    m, n = copy.shape
+
+    p = np.ndarray(filter_size ** 2, dtype=int)
+
+    for v in range(1, n - filter_size - 1):
+        for u in range(1, m - filter_size - 1):
+            k = 0
+            for j in range(-floor(filter_size / 2), floor(filter_size / 2) + 1):
+                for i in range(-floor(filter_size / 2), floor(filter_size / 2) + 1):
+                    p[k] = in_image[u + i][v + j]
+                    k += 1
+            p = np.sort(p, kind='heapsort')
+
+            copy[floor(u)][floor(v)] = p[floor(len(p) / 2)]
+    return copy
+
+
 def get_text(grid, is_file=False):
     if is_file:
         image = skm.io.imread(grid)
+        image = np.array(image).astype(np.int16)
+        img_gray = rgb2gray(image)
+        binary_image = get_binary(img_gray, 128)
+        dilated_image = dilate(binary_image, ha)
+        eroded_image = erode(dilated_image, ha)
+        image = median_filter(eroded_image, 3)
+
     else:
         image = np.array(grid)
-    image_gray = rgb2gray(image)
-    image = get_binary(image_gray, 1)
+        image_gray = rgb2gray(image)
+        image = get_binary(image_gray, 1)
 
     regions = get_regions(image, 8)
     unique_region_indexes = np.unique(regions)
