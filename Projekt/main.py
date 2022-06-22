@@ -110,7 +110,9 @@ while run:
                         break
                     if button.text == "Open...":
                         try:
-                            buttons[idx - 1].text = get_text(prompt_file(), True)
+                            # buttons[idx - 1].text = get_text(prompt_file(), True)
+                            buttons[idx - 1].text = get_text('/Users/paulruess/PycharmProjects/2D_Computer_Vision/'
+                                                             'Projekt/images/experts.JPG', True)
                         except ValueError:
                             print('invalid file')
                         break

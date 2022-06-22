@@ -198,9 +198,9 @@ def get_text(grid, is_file=False):
         dilated_image = dilate(binary_image, ha)
         eroded_image = erode(dilated_image, ha)
         image = median_filter(eroded_image, 3)
-        plt.figure(1, dpi=300)
-        plt.imshow(image, cmap=cm.Greys_r)
-        plt.show()
+        # plt.figure(1, dpi=300)
+        # plt.imshow(image, cmap=cm.Greys_r)
+        # plt.show()
 
     else:
         image = np.array(grid)
@@ -233,9 +233,9 @@ def get_text(grid, is_file=False):
         rois[idx] = np.pad(rois[idx], pad_width=10)
         rois[idx] = resize(rois[idx], (28, 28))
         rois[idx] = ((rois[idx] - rois[idx].min()) * (1 / (rois[idx].max() - rois[idx].min()) * 255)).astype('uint8')
-        plt.figure(1, dpi=300)
-        plt.imshow(rois[idx], cmap=cm.Greys_r)
-        plt.show()
+        # plt.figure(1, dpi=300)
+        # plt.imshow(rois[idx], cmap=cm.Greys_r)
+        # plt.show()
 
     guess = ''
     for roi in rois:
