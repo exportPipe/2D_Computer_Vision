@@ -1,7 +1,7 @@
 from math import log
 
 # Build a cost dictionary, assuming Zipf's law and cost = -math.log(probability).
-words = open("wortliste eng freq.txt").read().split()
+words = open("./utils/sentence/wortliste eng freq.txt").read().split()
 wordcost = dict((k, log((i + 1) * log(len(words)))) for i, k in enumerate(words))
 maxword = max(len(x) for x in words)
 
@@ -30,7 +30,3 @@ def get_sentence(s):
         i -= k
 
     return " ".join(reversed(out))
-
-
-if __name__ == '__main__':
-    print(get_sentence('yourmumisgay'))
