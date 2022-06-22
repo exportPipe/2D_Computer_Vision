@@ -6,8 +6,11 @@ from skimage.transform import resize
 import tensorflow as tf
 import skimage as skm
 
+from Projekt.utils.sentence import sentence
+
 model = tf.keras.models.load_model("cnnModel")
 model.trainable = False
+MINIMUM_REGION_SIZE = 25
 
 ha = np.array([[0, 0, 0],
                [0, 1, 1],
@@ -191,10 +194,13 @@ def get_text(grid, is_file=False):
         image = skm.io.imread(grid)
         image = np.array(image).astype(np.int16)
         img_gray = rgb2gray(image)
-        binary_image = get_binary(img_gray, 128)
+        binary_image = get_binary(img_gray, 100)
         dilated_image = dilate(binary_image, ha)
         eroded_image = erode(dilated_image, ha)
         image = median_filter(eroded_image, 3)
+        plt.figure(1, dpi=300)
+        plt.imshow(image, cmap=cm.Greys_r)
+        plt.show()
 
     else:
         image = np.array(grid)
@@ -219,13 +225,17 @@ def get_text(grid, is_file=False):
         col_min = np.amin(region_indexes[1])
         col_max = np.amax(region_indexes[1])
         roi = region[row_min:row_max, col_min:col_max]
-        rois.append(roi)
+        if sum(sum(roi)) > MINIMUM_REGION_SIZE:
+            rois.append(roi)
 
     for idx, region in enumerate(rois):
         plt.figure(1, dpi=300)
         rois[idx] = np.pad(rois[idx], pad_width=10)
         rois[idx] = resize(rois[idx], (28, 28))
         rois[idx] = ((rois[idx] - rois[idx].min()) * (1 / (rois[idx].max() - rois[idx].min()) * 255)).astype('uint8')
+        plt.figure(1, dpi=300)
+        plt.imshow(rois[idx], cmap=cm.Greys_r)
+        plt.show()
 
     guess = ''
     for roi in rois:
@@ -233,4 +243,5 @@ def get_text(grid, is_file=False):
         prediction = np.argmax(model.predict([roi]), axis=1)
         for i in range(len(prediction)):
             guess += chr(prediction[i] + 96)
-    return guess
+
+    return sentence.get_sentence(guess)
