@@ -30,7 +30,3 @@ def get_sentence(s):
         i -= k
 
     return " ".join(reversed(out))
-
-
-if __name__ == '__main__':
-    print(get_sentence('yourmumisgay'))
